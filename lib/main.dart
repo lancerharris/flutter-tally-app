@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tally_app/widgets/bottom_nav.dart';
 import 'Home/home_screen.dart';
 
 void main() {
@@ -29,14 +30,6 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  var _selectedIndex = 0;
-
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -48,36 +41,7 @@ class _MyHomePageState extends State<MyHomePage> {
         ],
       ),
       body: HomeScreen(),
-      bottomNavigationBar: BottomNavigationBar(
-        items: [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: '',
-            backgroundColor: Theme.of(context).primaryColorDark,
-          ),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.ac_unit),
-              label: '',
-              backgroundColor: Colors.purple),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.supervisor_account),
-            label: '',
-            backgroundColor: Theme.of(context).primaryColorDark,
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.account_box_rounded),
-            label: '',
-            backgroundColor: Theme.of(context).primaryColorDark,
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.article),
-            label: '',
-            backgroundColor: Theme.of(context).primaryColorDark,
-          ),
-        ],
-        currentIndex: _selectedIndex,
-        onTap: _onItemTapped,
-      ),
+      bottomNavigationBar: BottomNav(),
     );
   }
 }
