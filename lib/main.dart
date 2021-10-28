@@ -1,47 +1,67 @@
 import 'package:flutter/material.dart';
+import 'Home/models/tally_collection.dart';
+import 'Home/models/tally_panel.dart';
+import 'Home/models/tally_task.dart';
 
 void main() {
   runApp(MyApp());
 }
 
+List<TallyPanel> generateTallyItems() {
+  var tallyTask1 = TallyTask("Eat Breakfast",
+      isExpanded: false, streak: 4, isFrozen: false, count: 15);
+  var tallyTask2 = TallyTask("task_2",
+      isExpanded: false, streak: 3, isFrozen: false, count: 4);
+  var tallyTask3 = TallyTask("task_3",
+      isExpanded: false, streak: 7, isFrozen: false, count: 99);
+  var tallyCollection1 = TallyCollection("first collection",
+      count: 10, isExpanded: false, isFrozen: false, streak: 10);
+
+  tallyCollection1.addTallyTask(tallyTask2);
+  tallyCollection1.addTallyTask(tallyTask3);
+
+  List<TallyPanel> tallyPanelItems = [];
+  tallyPanelItems.add(TallyPanel(
+    tallyTask1.name,
+    count: tallyTask1.count,
+    isExpanded: tallyTask1.isExpanded,
+    isFrozen: tallyTask1.isFrozen,
+    streak: tallyTask1.streak,
+  ));
+  tallyPanelItems.add(TallyPanel(
+    tallyTask2.name,
+    count: tallyTask2.count,
+    isExpanded: tallyTask2.isExpanded,
+    isFrozen: tallyTask2.isFrozen,
+    streak: tallyTask2.streak,
+  ));
+  tallyPanelItems.add(TallyPanel(
+    tallyCollection1.name,
+    count: tallyCollection1.count,
+    isExpanded: tallyCollection1.isExpanded,
+    isFrozen: tallyCollection1.isFrozen,
+    streak: tallyCollection1.streak,
+  ));
+
+  return tallyPanelItems;
+}
+
 class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Tally',
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // Try running your application with "flutter run". You'll see the
-        // application has a blue toolbar. Then, without quitting the app, try
-        // changing the primarySwatch below to Colors.green and then invoke
-        // "hot reload" (press "r" in the console where you ran "flutter run",
-        // or simply save your changes to "hot reload" in a Flutter IDE).
-        // Notice that the counter didn't reset back to zero; the application
-        // is not restarted.
-        primarySwatch: Colors.blue,
-        // This makes the visual density adapt to the platform that you run
-        // the app on. For desktop platforms, the controls will be smaller and
-        // closer together (more dense) than on mobile platforms.
+        primarySwatch: Colors.amber,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: MyHomePage(title: 'Flutter Demo Home Page'),
+      home: MyHomePage(title: 'Tally'),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
+  MyHomePage({Key? key, required this.title}) : super(key: key);
 
   final String title;
 
@@ -49,69 +69,150 @@ class MyHomePage extends StatefulWidget {
   _MyHomePageState createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+class _MyHomePageState extends State<MyHomePage>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _animationController = AnimationController(
+    vsync: this, // this SingleTickerProviderStateMixin
+    duration: const Duration(seconds: 1),
+  );
 
-  void _incrementCounter() {
+  // late final Animation<double> animation = CurvedAnimation(
+  //   parent: _animationController,
+  //   curve: Curves.fastOutSlowIn,
+  // )..addStatusListener((status) {
+  //     if (status == AnimationStatus.completed) {
+  //       setState(() {
+  //         _animationController.reverse();
+  //       });
+  //     } else if (status == AnimationStatus.dismissed) {
+  //       setState(() {
+  //         _animationController.forward();
+  //       });
+  //     }
+  //   });
+
+  late final _extSizeTweenAnimation =
+      Tween<double>(begin: 1, end: 1.5).animate(_animationController);
+  late final _interiorSizeTweenAnimation =
+      Tween<double>(begin: 1, end: 1.5).animate(_animationController);
+
+  static final _exteriorSizeTween = Tween<double>(begin: 0, end: 1);
+  static final _interiorSizeTween = Tween<double>(begin: 0, end: 50);
+  final List<TallyPanel> _tallyPanelItems = generateTallyItems();
+
+  var _selectedIndex = 0;
+
+  void _onItemTapped(int index) {
     setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
+      _selectedIndex = index;
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
     return Scaffold(
       appBar: AppBar(
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
         title: Text(widget.title),
+        backgroundColor: Theme.of(context).primaryColorDark,
+        actions: [
+          IconButton(onPressed: () {}, icon: Icon(Icons.add)),
+        ],
       ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Invoke "debug painting" (press "p" in the console, choose the
-          // "Toggle Debug Paint" action from the Flutter Inspector in Android
-          // Studio, or the "Toggle Debug Paint" command in Visual Studio Code)
-          // to see the wireframe for each widget.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text(
-              'You have pushed the button this many times:',
+      // body: AnimatedCard(animation: animation),
+      // body: SizeTransition(
+      //   sizeFactor: animation,
+      //   axis: Axis.horizontal,
+      //   axisAlignment: -1,
+      //   child: const Center(
+      //     child: FlutterLogo(size: 200.0),
+      //   ),
+      // ),
+      body: _tallyPanelItems.length > 0
+          ? ListView.separated(
+              padding: EdgeInsets.all(8),
+              itemCount: _tallyPanelItems.length,
+              itemBuilder: (context, index) {
+                var isExpanded = _tallyPanelItems[index].isExpanded;
+
+                return Card(
+                  child: Container(
+                    padding: const EdgeInsets.all(5),
+                    margin: const EdgeInsets.all(5),
+                    //height: _exteriorSizeTween.evaluate(animation),
+                    child: Column(
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(_tallyPanelItems[index].name),
+                            GestureDetector(
+                              child: isExpanded
+                                  ? Icon(Icons.expand_less)
+                                  : Icon(Icons.expand_more),
+                              onTap: () {
+                                setState(() {
+                                  _tallyPanelItems[index].isExpanded =
+                                      !_tallyPanelItems[index].isExpanded;
+                                });
+                              },
+                            ),
+                          ],
+                        ),
+                        if (isExpanded)
+                          Container(
+                            color: Colors.red,
+                            child: Card(
+                              color: Colors.red,
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+              separatorBuilder: (_, index) => SizedBox(
+                height: 5,
+              ),
+            )
+          : const Center(
+              child: Text('Start adding tally tasks!'),
             ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headline4,
-            ),
-          ],
-        ),
+      bottomNavigationBar: BottomNavigationBar(
+        items: [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: '',
+            backgroundColor: Theme.of(context).primaryColorDark,
+          ),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.ac_unit),
+              label: '',
+              backgroundColor: Colors.purple),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.supervisor_account),
+            label: '',
+            backgroundColor: Theme.of(context).primaryColorDark,
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.account_box_rounded),
+            label: '',
+            backgroundColor: Theme.of(context).primaryColorDark,
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.article),
+            label: '',
+            backgroundColor: Theme.of(context).primaryColorDark,
+          ),
+        ],
+        currentIndex: _selectedIndex,
+        onTap: _onItemTapped,
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
     );
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _animationController.dispose();
   }
 }
