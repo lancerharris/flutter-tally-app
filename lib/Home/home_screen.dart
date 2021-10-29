@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tally_app/Home/widgets/tally_task_panel.dart';
 
 import 'models/tally_collection.dart';
 import 'models/tally_panel.dart';
@@ -21,42 +22,8 @@ class _HomeScreenState extends State<HomeScreen> {
             padding: EdgeInsets.all(8),
             itemCount: _tallyPanelItems.length,
             itemBuilder: (context, index) {
-              var isExpanded = _tallyPanelItems[index].isExpanded;
-
-              return Card(
-                child: Container(
-                  padding: const EdgeInsets.all(5),
-                  margin: const EdgeInsets.all(5),
-                  //height: _exteriorSizeTween.evaluate(animation),
-                  child: Column(
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(_tallyPanelItems[index].name),
-                          GestureDetector(
-                            child: isExpanded
-                                ? Icon(Icons.expand_less)
-                                : Icon(Icons.expand_more),
-                            onTap: () {
-                              setState(() {
-                                _tallyPanelItems[index].isExpanded =
-                                    !_tallyPanelItems[index].isExpanded;
-                              });
-                            },
-                          ),
-                        ],
-                      ),
-                      if (isExpanded)
-                        Container(
-                          color: Colors.red,
-                          child: Card(
-                            color: Colors.red,
-                          ),
-                        ),
-                    ],
-                  ),
-                ),
+              return TallyTaskPanel(
+                tallyPanelItem: _tallyPanelItems[index],
               );
             },
             separatorBuilder: (_, index) => SizedBox(
@@ -103,6 +70,7 @@ List<TallyPanel> generateTallyItems() {
     isExpanded: tallyCollection1.isExpanded,
     isFrozen: tallyCollection1.isFrozen,
     streak: tallyCollection1.streak,
+    children: tallyCollection1.tallyTasks,
   ));
 
   return tallyPanelItems;

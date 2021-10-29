@@ -1,0 +1,31 @@
+{
+  "tallyTasks": {
+    "Eat Breakfast": {
+      "isExpanded": "false",
+      "streak": "4",
+      "isFrozen": "false",
+      "count": "15"
+    },
+    "task_2": {
+      "isExpanded": "false",
+      "streak": "3",
+      "isFrozen": "false",
+      "count": "4"
+    },
+    "task_3": {
+      "isExpanded": "false",
+      "streak": "7",
+      "isFrozen": "false",
+      "count": "99"
+    }
+  },
+  "tallyCollections": {
+    "fist collection": {
+      "count": "10",
+      "isExpanded": "false",
+      "isFrozen": "false",
+      "streak": "10",
+      "children": ["task_2", "task_3"]
+    }
+  }
+}
