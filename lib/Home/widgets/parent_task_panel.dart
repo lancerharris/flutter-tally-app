@@ -2,31 +2,22 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tally_app/Home/models/tally_collection.dart';
 import 'package:tally_app/providers/task_manager.dart';
-
 import 'child_task_panel.dart';
 
-class ParentTaskPanel extends StatefulWidget {
-  // final Map<String, dynamic> tallyPanelMap;
+class ParentTaskPanel extends StatelessWidget {
   final int index;
-  const ParentTaskPanel({required this.index});
+  const ParentTaskPanel({Key? key, required this.index}) : super(key: key);
 
-  @override
-  State<ParentTaskPanel> createState() => _ParentTaskPanelState();
-}
-
-class _ParentTaskPanelState extends State<ParentTaskPanel> {
   @override
   Widget build(BuildContext context) {
     var parentListItem =
-        Provider.of<TaskManager>(context).getParentItemByIndex(widget.index);
-
+        Provider.of<TaskManager>(context).getParentItemByIndex(index);
     var isExpanded = parentListItem.isExpanded;
 
     return Card(
       child: Container(
         padding: const EdgeInsets.all(5),
         margin: const EdgeInsets.all(5),
-        //height: _exteriorSizeTween.evaluate(animation),
         child: Column(
           children: [
             Row(
@@ -38,21 +29,17 @@ class _ParentTaskPanelState extends State<ParentTaskPanel> {
                       ? Icon(Icons.expand_less)
                       : Icon(Icons.expand_more),
                   onTap: () {
-                    setState(() {
-                      if (parentListItem.isCollection) {
-                        Provider.of<TaskManager>(context, listen: false)
-                            .updateExpansion(
-                                parentListItem.id, parentListItem.isCollection);
-                      } else {
-                        Provider.of<TaskManager>(context, listen: false)
-                            .updateExpansion(
-                          parentListItem.id,
-                          parentListItem.isCollection,
-                        );
-                      }
-
-                      // panelListItem.isExpanded = !panelListItem.isExpanded;
-                    });
+                    if (parentListItem.isCollection) {
+                      Provider.of<TaskManager>(context, listen: false)
+                          .updateExpansion(
+                              parentListItem.id, parentListItem.isCollection);
+                    } else {
+                      Provider.of<TaskManager>(context, listen: false)
+                          .updateExpansion(
+                        parentListItem.id,
+                        parentListItem.isCollection,
+                      );
+                    }
                   },
                 ),
               ],
