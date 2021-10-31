@@ -1,26 +1,33 @@
-import './tally_task.dart';
+import 'package:tally_app/Home/models/tally_item.dart';
 
-class TallyCollection {
+class TallyCollection extends TallyItem {
   String name;
+  String id;
   int streak;
   int count;
   bool isExpanded;
   bool isFrozen;
   late DateTime dateCreated;
-  List<TallyTask> tallyTasks = [];
+  List<String> tallyTaskIds = [];
+  bool isCollection = true;
 
-  TallyCollection(
-    this.name, {
+  TallyCollection({
+    required this.name,
+    required this.id,
     this.streak = 0,
     this.count = 0,
     this.isExpanded = false,
     this.isFrozen = false,
-  }) {
-    dateCreated = DateTime.now();
-  }
+  }) : super(
+          name: name,
+          id: id,
+          streak: streak,
+          count: count,
+          isExpanded: isExpanded,
+          isFrozen: isFrozen,
+        );
 
-  void addTallyTask(TallyTask tallyTask) {
-    tallyTasks.add(tallyTask);
-    return;
+  void addTallyTaskId(String tallyTaskId) {
+    tallyTaskIds.add(tallyTaskId);
   }
 }

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:tally_app/providers/task_manager.dart';
 import 'package:tally_app/widgets/bottom_nav.dart';
 import 'Home/home_screen.dart';
 
@@ -32,16 +34,21 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-        backgroundColor: Theme.of(context).primaryColorDark,
-        actions: [
-          IconButton(onPressed: () {}, icon: Icon(Icons.add)),
-        ],
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (ctx) => TaskManager()),
+      ],
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(widget.title),
+          backgroundColor: Theme.of(context).primaryColorDark,
+          actions: [
+            IconButton(onPressed: () {}, icon: Icon(Icons.add)),
+          ],
+        ),
+        body: HomeScreen(),
+        bottomNavigationBar: BottomNav(),
       ),
-      body: HomeScreen(),
-      bottomNavigationBar: BottomNav(),
     );
   }
 }
