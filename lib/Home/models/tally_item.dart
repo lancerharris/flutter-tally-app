@@ -7,6 +7,7 @@ class TallyItem {
   bool isFrozen;
   late DateTime dateCreated;
   bool isCollection = false;
+  int? positionInList;
 
   TallyItem({
     required this.name,
