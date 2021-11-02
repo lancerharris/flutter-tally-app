@@ -106,22 +106,29 @@ class TaskManager with ChangeNotifier {
 
   void createParentItemList([bool snubListeners = false]) {
     // Don't return tasks that are a part of a collection.
-    _parentItemList = _topLevelList
-        .where(
-          (item) =>
-              item.isCollection ||
-              (!item.isCollection && !(item as TallyTask).inCollection),
-        )
-        .toList();
+    _parentItemList = [];
+    for (int i = 0; i < _topLevelList.length; i++) {
+      var item = _topLevelList[i];
+      if (item.isCollection ||
+          (!item.isCollection && !(item as TallyTask).inCollection)) {
+        item.positionInList = i;
+        _parentItemList.add(item);
+      }
+    }
     if (!snubListeners) {
       notifyListeners();
     }
   }
 
   void createChildItemList([bool snubListeners = false]) {
-    _childItemList = _topLevelList
-        .where((item) => !item.isCollection && (item as TallyTask).inCollection)
-        .toList();
+    _childItemList = [];
+    for (int i = 0; i < _topLevelList.length; i++) {
+      var item = _topLevelList[i];
+      if (!item.isCollection && (item as TallyTask).inCollection) {
+        item.positionInList = i;
+        _childItemList.add(item);
+      }
+    }
 
     if (!snubListeners) {
       notifyListeners();
