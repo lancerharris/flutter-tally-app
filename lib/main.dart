@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:tally_app/Home/widgets/new_task_modal.dart';
 import 'package:tally_app/providers/task_manager.dart';
 import 'package:tally_app/widgets/bottom_nav.dart';
 import 'Home/home_screen.dart';
@@ -43,7 +44,21 @@ class _MyHomePageState extends State<MyHomePage> {
           title: Text(widget.title),
           backgroundColor: Theme.of(context).primaryColorDark,
           actions: [
-            IconButton(onPressed: () {}, icon: Icon(Icons.add)),
+            IconButton(
+                onPressed: () async {
+                  showModalBottomSheet(
+                      backgroundColor: Colors.purple,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(15),
+                              topRight: Radius.circular(15))),
+                      context: context,
+                      constraints: BoxConstraints(
+                        maxWidth: 750,
+                      ),
+                      builder: (context) => NewTaskModal());
+                },
+                icon: Icon(Icons.add)),
           ],
         ),
         body: HomeScreen(),
