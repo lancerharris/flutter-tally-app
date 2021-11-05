@@ -5,6 +5,8 @@ import 'package:tally_app/providers/task_manager.dart';
 import 'package:tally_app/widgets/bottom_nav.dart';
 import 'Home/home_screen.dart';
 
+import 'theme/app_theme.dart';
+
 void main() {
   runApp(MyApp());
 }
@@ -14,10 +16,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Tally',
-      theme: ThemeData(
-        primarySwatch: Colors.amber,
-        visualDensity: VisualDensity.adaptivePlatformDensity,
-      ),
+      theme: AppTheme.dark(),
       home: MyHomePage(title: 'Tally'),
     );
   }
@@ -41,8 +40,10 @@ class _MyHomePageState extends State<MyHomePage> {
       ],
       child: Scaffold(
         appBar: AppBar(
-          title: Text(widget.title),
-          backgroundColor: Theme.of(context).primaryColorDark,
+          title: Text(
+            widget.title,
+            style: Theme.of(context).textTheme.headline1,
+          ),
           actions: [
             IconButton(
                 onPressed: () async {

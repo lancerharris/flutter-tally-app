@@ -20,7 +20,11 @@ class _BottomNavState extends State<BottomNav> {
   Widget build(BuildContext context) {
     return BottomNavigationBar(
       items: [
-        createNavItem(context, Icon(Icons.home)),
+        createNavItem(
+            context,
+            Icon(
+              Icons.home,
+            )),
         createNavItem(context, Icon(Icons.ac_unit)),
         createNavItem(context, Icon(Icons.supervisor_account)),
         createNavItem(context, Icon(Icons.account_box_rounded)),
@@ -34,8 +38,8 @@ class _BottomNavState extends State<BottomNav> {
 
 BottomNavigationBarItem createNavItem(BuildContext context, Icon icon) {
   return BottomNavigationBarItem(
+    // backgroundColor: Color.fromRGBO(255, 110, 0, 1),
     icon: icon,
     label: '',
-    backgroundColor: Theme.of(context).primaryColorDark,
   );
 }
