@@ -2,9 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class AppTheme {
+  static const mainColor = Color.fromRGBO(255, 80, 0, 1);
+
+  static const secondaryColor = Color.fromRGBO(28, 202, 142, 1);
+
   // 1
   static TextTheme lightTextTheme = TextTheme(
-    bodyText1: GoogleFonts.openSans(
+    bodyText1: GoogleFonts.caveat(
       fontSize: 14.0,
       fontWeight: FontWeight.w700,
       color: Colors.black,
@@ -14,18 +18,18 @@ class AppTheme {
       fontWeight: FontWeight.bold,
       color: Colors.black,
     ),
-    headline2: GoogleFonts.lobster(
+    headline2: GoogleFonts.caveat(
       fontSize: 21.0,
       fontWeight: FontWeight.w700,
       color: Colors.black,
     ),
-    headline3: GoogleFonts.lobster(
+    headline3: GoogleFonts.caveat(
       fontSize: 16.0,
       fontWeight: FontWeight.w600,
       color: Colors.black,
     ),
-    headline6: GoogleFonts.lobster(
-      fontSize: 20.0,
+    headline6: GoogleFonts.permanentMarker(
+      fontSize: 24.0,
       fontWeight: FontWeight.w600,
       color: Colors.black,
     ),
@@ -33,28 +37,30 @@ class AppTheme {
 
   // 2
   static TextTheme darkTextTheme = TextTheme(
-    bodyText1: GoogleFonts.openSans(
+    bodyText1: GoogleFonts.caveat(
       fontSize: 14.0,
       fontWeight: FontWeight.w700,
       color: Colors.white,
     ),
-    headline1: GoogleFonts.lobster(
+    headline1: GoogleFonts.permanentMarker(
+      fontStyle: FontStyle.italic,
+      letterSpacing: 1.2,
       fontSize: 32.0,
       fontWeight: FontWeight.bold,
       color: Colors.white,
     ),
-    headline2: GoogleFonts.lobster(
+    headline2: GoogleFonts.caveat(
       fontSize: 21.0,
       fontWeight: FontWeight.w700,
       color: Colors.white,
     ),
-    headline3: GoogleFonts.lobster(
+    headline3: GoogleFonts.caveat(
       fontSize: 16.0,
       fontWeight: FontWeight.w600,
       color: Colors.white,
     ),
-    headline6: GoogleFonts.lobster(
-      fontSize: 20.0,
+    headline6: GoogleFonts.permanentMarker(
+      fontSize: 24.0,
       fontWeight: FontWeight.w600,
       color: Colors.white,
     ),
@@ -74,7 +80,7 @@ class AppTheme {
       ),
       appBarTheme: const AppBarTheme(
         foregroundColor: Colors.black,
-        backgroundColor: Color.fromRGBO(255, 110, 0, 1),
+        backgroundColor: mainColor,
       ),
       floatingActionButtonTheme: const FloatingActionButtonThemeData(
         foregroundColor: Colors.white,
@@ -95,7 +101,7 @@ class AppTheme {
       brightness: Brightness.dark,
       appBarTheme: AppBarTheme(
         foregroundColor: Colors.white,
-        backgroundColor: Color.fromRGBO(255, 110, 0, 1),
+        backgroundColor: mainColor,
       ),
       floatingActionButtonTheme: const FloatingActionButtonThemeData(
         foregroundColor: Colors.white,
@@ -104,7 +110,7 @@ class AppTheme {
       bottomNavigationBarTheme: const BottomNavigationBarThemeData(
         selectedIconTheme: IconThemeData(color: Colors.white),
         unselectedIconTheme: IconThemeData(color: Colors.white),
-        backgroundColor: Color.fromRGBO(255, 110, 0, 1),
+        backgroundColor: mainColor,
       ),
       textTheme: darkTextTheme,
     );
