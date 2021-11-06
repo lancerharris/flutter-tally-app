@@ -18,6 +18,7 @@ class MyApp extends StatelessWidget {
       title: 'Tally',
       theme: AppTheme.dark(),
       home: MyHomePage(title: 'Tally'),
+      debugShowCheckedModeBanner: false,
     );
   }
 }
@@ -40,15 +41,18 @@ class _MyHomePageState extends State<MyHomePage> {
       ],
       child: Scaffold(
         appBar: AppBar(
+          centerTitle: true,
           title: Text(
             widget.title,
             style: Theme.of(context).textTheme.headline1,
           ),
           actions: [
-            IconButton(
+            Padding(
+              padding: const EdgeInsets.only(right: 10.0),
+              child: IconButton(
+                iconSize: 30,
                 onPressed: () async {
                   showModalBottomSheet(
-                      backgroundColor: Colors.purple,
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.only(
                               topLeft: Radius.circular(15),
@@ -59,7 +63,9 @@ class _MyHomePageState extends State<MyHomePage> {
                       ),
                       builder: (context) => NewTaskModal());
                 },
-                icon: Icon(Icons.add)),
+                icon: Icon(Icons.add),
+              ),
+            ),
           ],
         ),
         body: HomeScreen(),
