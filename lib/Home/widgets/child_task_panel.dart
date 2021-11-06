@@ -21,7 +21,10 @@ class ChildTaskPanel extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(childPanelItem.name),
+                  Text(
+                    childPanelItem.name,
+                    style: Theme.of(context).textTheme.headline2,
+                  ),
                   isExpanded
                       ? Icon(Icons.expand_less)
                       : Icon(Icons.expand_more),
