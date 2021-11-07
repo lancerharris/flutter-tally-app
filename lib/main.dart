@@ -53,12 +53,14 @@ class _MyHomePageState extends State<MyHomePage> {
                 iconSize: 30,
                 onPressed: () async {
                   showModalBottomSheet(
+                      isScrollControlled: true,
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.only(
                               topLeft: Radius.circular(15),
                               topRight: Radius.circular(15))),
                       context: context,
                       constraints: BoxConstraints(
+                        maxHeight: 500,
                         maxWidth: 750,
                       ),
                       builder: (context) => NewTaskModal());
