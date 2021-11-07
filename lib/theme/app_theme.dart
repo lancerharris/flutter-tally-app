@@ -3,8 +3,13 @@ import 'package:google_fonts/google_fonts.dart';
 
 class AppTheme {
   static const mainColor = Color.fromRGBO(255, 80, 0, 1);
+  static const halfwayColor = Color.fromRGBO(128, 128, 128, 1);
+  static const secondaryColor = Color.fromRGBO(0, 175, 255, 1);
+  // static const secondaryColor = Color.fromRGBO(28, 202, 142, 1);
+  static const disabledColor = Color.fromRGBO(100, 100, 100, 0.5);
 
-  static const secondaryColor = Color.fromRGBO(28, 202, 142, 1);
+  // consider yellow to blue for light theme
+  // FFFF55 #00AEFF
 
   // 1
   static TextTheme lightTextTheme = TextTheme(
