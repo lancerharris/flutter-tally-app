@@ -135,6 +135,16 @@ class TaskManager with ChangeNotifier {
     }
   }
 
+  List<List<dynamic>> get collectionNamesAndIds {
+    List<List<dynamic>> collectionNamesAndIds = [];
+    _topLevelList.forEach((element) {
+      if (element.isCollection) {
+        collectionNamesAndIds.add([element.name, element.id]);
+      }
+    });
+    return collectionNamesAndIds;
+  }
+
   TallyItem getParentItemByIndex(int itemIndex) {
     return _parentItemList[itemIndex];
   }
