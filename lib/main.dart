@@ -47,31 +47,42 @@ class _MyHomePageState extends State<MyHomePage> {
             style: Theme.of(context).textTheme.headline1,
           ),
           actions: [
-            Padding(
-              padding: const EdgeInsets.only(right: 10.0),
-              child: IconButton(
-                iconSize: 30,
-                onPressed: () async {
-                  showModalBottomSheet(
-                      isScrollControlled: true,
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.only(
-                              topLeft: Radius.circular(15),
-                              topRight: Radius.circular(15))),
-                      context: context,
-                      constraints: BoxConstraints(
-                        maxHeight: 500,
-                        maxWidth: 750,
-                      ),
-                      builder: (context) => NewTaskModal());
-                },
-                icon: Icon(Icons.add),
-              ),
-            ),
+            AddTask(),
           ],
         ),
         body: HomeScreen(),
         bottomNavigationBar: BottomNav(),
+      ),
+    );
+  }
+}
+
+class AddTask extends StatelessWidget {
+  const AddTask({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(right: 10.0),
+      child: IconButton(
+        iconSize: 30,
+        onPressed: () async {
+          var collectionNames =
+              Provider.of<TaskManager>(context, listen: false).collectionNames;
+          showModalBottomSheet(
+              isScrollControlled: true,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(15),
+                      topRight: Radius.circular(15))),
+              context: context,
+              constraints: BoxConstraints(
+                maxHeight: 500,
+                maxWidth: 750,
+              ),
+              builder: (context) => NewTaskModal(collectionNames));
+        },
+        icon: Icon(Icons.add),
       ),
     );
   }
