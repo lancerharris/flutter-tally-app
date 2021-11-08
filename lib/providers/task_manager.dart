@@ -40,6 +40,34 @@ class TaskManager with ChangeNotifier {
       "isFrozen": false,
       "streak": 10,
     },
+    "tallyCollection2": {
+      "name": "second collection",
+      "count": 10,
+      "isExpanded": false,
+      "isFrozen": false,
+      "streak": 10,
+    },
+    "tallyCollection3": {
+      "name": "third",
+      "count": 10,
+      "isExpanded": false,
+      "isFrozen": false,
+      "streak": 10,
+    },
+    "tallyCollection4": {
+      "name": "fourth",
+      "count": 10,
+      "isExpanded": false,
+      "isFrozen": false,
+      "streak": 10,
+    },
+    "tallyCollection5": {
+      "name": "fifth",
+      "count": 10,
+      "isExpanded": false,
+      "isFrozen": false,
+      "streak": 10,
+    },
   };
 
   TaskManager() {
@@ -135,14 +163,14 @@ class TaskManager with ChangeNotifier {
     }
   }
 
-  List<List<dynamic>> get collectionNamesAndIds {
-    List<List<dynamic>> collectionNamesAndIds = [];
+  List<String> get collectionNames {
+    List<String> collectionNames = [];
     _topLevelList.forEach((element) {
       if (element.isCollection) {
-        collectionNamesAndIds.add([element.name, element.id]);
+        collectionNames.add(element.name);
       }
     });
-    return collectionNamesAndIds;
+    return collectionNames;
   }
 
   TallyItem getParentItemByIndex(int itemIndex) {
