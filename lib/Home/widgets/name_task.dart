@@ -2,19 +2,25 @@ import 'package:flutter/material.dart';
 import 'package:tally_app/theme/app_theme.dart';
 
 class NameTask extends StatefulWidget {
-  const NameTask({Key? key}) : super(key: key);
+  const NameTask({Key? key, required this.setTaskNameCallback})
+      : super(key: key);
+  final Function(String) setTaskNameCallback;
 
   @override
   State<NameTask> createState() => _NameTaskState();
 }
 
 class _NameTaskState extends State<NameTask> {
-  late FocusNode _focusNode1;
+  late FocusNode _focusNode1 = FocusNode();
+  late TextEditingController _nameController = TextEditingController();
+  String? taskName;
 
   @override
   void initState() {
     super.initState();
-    _focusNode1 = FocusNode();
+    _nameController.addListener(() {
+      taskName = _nameController.text;
+    });
   }
 
   @override
@@ -31,6 +37,7 @@ class _NameTaskState extends State<NameTask> {
         Padding(
             padding: const EdgeInsets.only(left: 15),
             child: TextField(
+              controller: _nameController,
               focusNode: _focusNode1,
               cursorColor:
                   Color.lerp(AppTheme.mainColor, AppTheme.secondaryColor, 0.05),
@@ -53,6 +60,7 @@ class _NameTaskState extends State<NameTask> {
                   FocusScope.of(context).requestFocus(_focusNode1);
                 });
               },
+              onSubmitted: widget.setTaskNameCallback,
             )),
         SizedBox(height: 10)
       ],
@@ -62,6 +70,7 @@ class _NameTaskState extends State<NameTask> {
   @override
   void dispose() {
     _focusNode1.dispose();
+    _nameController.dispose();
     super.dispose();
   }
 }
