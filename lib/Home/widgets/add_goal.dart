@@ -2,7 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:tally_app/theme/app_theme.dart';
 
 class AddGoal extends StatefulWidget {
-  const AddGoal({Key? key}) : super(key: key);
+  const AddGoal(
+      {Key? key, required this.setGoalCount, required this.setGoalIncrement})
+      : super(key: key);
+  final Function(int) setGoalCount;
+  final Function(int) setGoalIncrement;
 
   @override
   _AddGoalState createState() => _AddGoalState();
@@ -10,7 +14,8 @@ class AddGoal extends StatefulWidget {
 
 class _AddGoalState extends State<AddGoal> {
   var _addGoal = true;
-  List<ListWheelItem> _wheelValues = [];
+  var _goalCount = 1;
+  List<Widget> _wheelValues = [];
 
   @override
   Widget build(BuildContext context) {
@@ -53,7 +58,7 @@ class _AddGoalState extends State<AddGoal> {
                           : AppTheme.disabledColor,
                       child: Text(
                         'Yes',
-                        style: Theme.of(context).textTheme.headline3,
+                        style: Theme.of(context).textTheme.headline2,
                       ),
                     ),
                   ),
@@ -75,7 +80,7 @@ class _AddGoalState extends State<AddGoal> {
                           : Color.lerp(AppTheme.mainColor,
                               AppTheme.secondaryColor, 0.05),
                       child: Text('No',
-                          style: Theme.of(context).textTheme.headline3),
+                          style: Theme.of(context).textTheme.headline2),
                     ),
                   ),
                 ),
@@ -86,13 +91,13 @@ class _AddGoalState extends State<AddGoal> {
         ),
         if (_addGoal)
           Padding(
-            padding: const EdgeInsets.only(left: 15, top: 10),
+            padding: const EdgeInsets.only(left: 15, top: 15),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Text('I want to get',
                     style: Theme.of(context).textTheme.headline2),
-                SizedBox(width: 10),
+                SizedBox(width: 15),
                 ClipRRect(
                   borderRadius: BorderRadius.circular(20),
                   child: Container(
@@ -105,15 +110,21 @@ class _AddGoalState extends State<AddGoal> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text(
-                          'N',
-                          style: Theme.of(context).textTheme.headline2,
+                        GestureDetector(
+                          child: Text(
+                            '$_goalCount',
+                            style: Theme.of(context).textTheme.headline2,
+                          ),
+                          onTap: () {
+                            _goalCount = 1;
+                            widget.setGoalCount(10);
+                          },
                         ),
                       ],
                     ),
                   ),
                 ),
-                SizedBox(width: 5),
+                SizedBox(width: 10),
                 Text('Tallies ', style: Theme.of(context).textTheme.headline2),
                 Row(children: [
                   Text('(',
@@ -124,11 +135,13 @@ class _AddGoalState extends State<AddGoal> {
                     height: 70,
                     width: 85,
                     child: ListWheelScrollView(
-                        diameterRatio: 0.8,
-                        offAxisFraction: -0.2,
-                        itemExtent: 35,
-                        physics: BouncingScrollPhysics(),
-                        children: _wheelValues),
+                      diameterRatio: 0.8,
+                      offAxisFraction: -.5,
+                      itemExtent: 35,
+                      physics: BouncingScrollPhysics(),
+                      children: _wheelValues,
+                      onSelectedItemChanged: widget.setGoalIncrement,
+                    ),
                   ),
                   SizedBox(width: 5),
                   Text(')',
@@ -139,6 +152,7 @@ class _AddGoalState extends State<AddGoal> {
               ],
             ),
           ),
+        if (!_addGoal) SizedBox(height: 10),
       ],
     );
   }
