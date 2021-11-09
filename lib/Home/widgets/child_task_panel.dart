@@ -3,13 +3,14 @@ import 'package:provider/provider.dart';
 import 'package:tally_app/providers/task_manager.dart';
 
 class ChildTaskPanel extends StatelessWidget {
-  final String childItemId;
-  const ChildTaskPanel({Key? key, required this.childItemId}) : super(key: key);
+  final String childItemName;
+  const ChildTaskPanel({Key? key, required this.childItemName})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     var childPanelItem =
-        Provider.of<TaskManager>(context).getChildItemById(childItemId);
+        Provider.of<TaskManager>(context).getChildItemByName(childItemName);
     var isExpanded = childPanelItem.isExpanded;
     return GestureDetector(
       child: Card(

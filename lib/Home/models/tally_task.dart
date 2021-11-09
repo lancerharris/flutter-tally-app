@@ -2,36 +2,40 @@ import 'package:tally_app/Home/models/tally_item.dart';
 
 class TallyTask extends TallyItem {
   String name;
-  String id;
+  late String id;
   int streak;
   int count;
   bool isExpanded;
   bool isFrozen;
   bool isCollection = false;
   late DateTime dateCreated;
-  String goalIncrement;
+  int? goalCount;
+  String? goalIncrement;
   List<String> collectionMemberships = [];
   bool inCollection = false;
 
   TallyTask({
     required this.name,
-    required this.id,
     this.streak = 0,
     this.count = 0,
     this.isExpanded = false,
     this.isFrozen = false,
-    this.goalIncrement = 'daily',
+    this.goalCount,
+    this.goalIncrement,
   }) : super(
           name: name,
-          id: id,
           streak: streak,
           count: count,
           isExpanded: isExpanded,
           isFrozen: isFrozen,
         );
 
-  void addToCollectionList(String collectionId) {
-    collectionMemberships.add(collectionId);
+  void addToCollectionMemberships(String collectionName) {
+    collectionMemberships.add(collectionName);
     inCollection = true;
+  }
+
+  void addAllCollectionMemberships(List<String> collectionMemberships) {
+    this.collectionMemberships = collectionMemberships;
   }
 }

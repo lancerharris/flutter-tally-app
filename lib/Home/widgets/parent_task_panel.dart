@@ -39,14 +39,14 @@ class ParentTaskPanel extends StatelessWidget {
                 ),
               if (parentListItem.isCollection &&
                   isExpanded &&
-                  (parentListItem as TallyCollection).tallyTaskIds.length > 0)
+                  (parentListItem as TallyCollection).tallyTaskNames.length > 0)
                 ListView.separated(
                   shrinkWrap: true,
                   itemBuilder: (context, index) {
                     return Container(
                       margin: EdgeInsets.only(left: 10),
                       child: ChildTaskPanel(
-                        childItemId: parentListItem.tallyTaskIds[index],
+                        childItemName: parentListItem.tallyTaskNames[index],
                         // childPanelItem: Provider.of<TallyTasks>(context)
                         //     .getChildPanelById(panelListItem.id, index))
                       ),
@@ -54,7 +54,7 @@ class ParentTaskPanel extends StatelessWidget {
                     // child: Center(child: Text('Entry $index')));
                   },
                   separatorBuilder: (context, index) => Divider(),
-                  itemCount: parentListItem.tallyTaskIds.length,
+                  itemCount: parentListItem.tallyTaskNames.length,
                 )
             ],
           ),

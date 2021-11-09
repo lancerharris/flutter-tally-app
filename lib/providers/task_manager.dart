@@ -75,7 +75,6 @@ class TaskManager with ChangeNotifier {
       (key, value) {
         var currentTask = TallyTask(
           name: value["name"],
-          id: key,
           count: value["count"],
           isExpanded: value["isExpanded"],
           isFrozen: value["isFrozen"],
@@ -89,7 +88,6 @@ class TaskManager with ChangeNotifier {
       (key, value) {
         var currentCollection = TallyCollection(
           name: value["name"],
-          id: key,
           count: value["count"],
           isExpanded: value["isExpanded"],
           isFrozen: value["isFrozen"],
@@ -100,8 +98,8 @@ class TaskManager with ChangeNotifier {
     );
 
     // some initialization of mock data. could have hard coded the result
-    addTaskToCollection("tallyTask2", "tallyCollection1");
-    addTaskToCollection("tallyTask3", "tallyCollection1");
+    addTaskToCollection("task_2", "first collection");
+    addTaskToCollection("task_3", "first collection");
 
     createParentItemList();
     createChildItemList();
@@ -177,14 +175,14 @@ class TaskManager with ChangeNotifier {
     return _parentItemList[itemIndex];
   }
 
-  TallyItem getChildItemById(String itemId) {
-    return _childItemList.firstWhere((item) => item.id == itemId);
+  TallyItem getChildItemByName(String itemName) {
+    return _childItemList.firstWhere((item) => item.name == itemName);
   }
 
-  void updateTopLevelList(String id, bool isCollection, TallyItem item,
+  void updateTopLevelList(String name, bool isCollection, TallyItem item,
       [bool snubListeners = false]) {
     var replacementIndex = _topLevelList.indexWhere(
-        (item) => item.id == id && item.isCollection == isCollection);
+        (item) => item.name == name && item.isCollection == isCollection);
 
     _topLevelList.replaceRange(replacementIndex, replacementIndex + 1, [item]);
     if (!snubListeners) {
@@ -192,18 +190,22 @@ class TaskManager with ChangeNotifier {
     }
   }
 
-  void addTaskToCollection(String taskId, String collectionId) {
+  void addTask() {
+    print('you\'ve made it from one provider to another');
+  }
+
+  void addTaskToCollection(String taskName, String collectionName) {
     var itemToUpdate = _topLevelList
-        .firstWhere((item) => item.id == taskId && !item.isCollection);
-    (itemToUpdate as TallyTask).addToCollectionList(collectionId);
+        .firstWhere((item) => item.name == taskName && !item.isCollection);
+    (itemToUpdate as TallyTask).addToCollectionMemberships(collectionName);
 
     var collectionToUpdate = _topLevelList
-        .firstWhere((item) => item.id == collectionId && item.isCollection);
-    (collectionToUpdate as TallyCollection).addTallyTaskId(taskId);
+        .firstWhere((item) => item.name == collectionName && item.isCollection);
+    (collectionToUpdate as TallyCollection).addTallyTaskName(taskName);
 
     // only notify listeners on last call
-    updateTopLevelList(taskId, false, itemToUpdate, true);
-    updateTopLevelList(collectionId, true, collectionToUpdate, true);
+    updateTopLevelList(taskName, false, itemToUpdate, true);
+    updateTopLevelList(collectionName, true, collectionToUpdate, true);
     createParentItemList(true);
     createChildItemList();
   }
