@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tally_app/Home/widgets/new_task_modal.dart';
 import 'package:tally_app/providers/task_manager.dart';
+import 'package:tally_app/providers/new_task_manager.dart';
 import 'package:tally_app/widgets/bottom_nav.dart';
 import 'Home/home_screen.dart';
 
@@ -38,6 +39,7 @@ class _MyHomePageState extends State<MyHomePage> {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (ctx) => TaskManager()),
+        ChangeNotifierProvider(create: (ctx) => NewTaskManager())
       ],
       child: Scaffold(
         appBar: AppBar(
@@ -69,7 +71,7 @@ class AddTask extends StatelessWidget {
         onPressed: () async {
           var collectionNames =
               Provider.of<TaskManager>(context, listen: false).collectionNames;
-          showModalBottomSheet(
+          var newTask = await showModalBottomSheet(
               isScrollControlled: true,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.only(
@@ -80,7 +82,8 @@ class AddTask extends StatelessWidget {
                 maxHeight: 500,
                 maxWidth: 750,
               ),
-              builder: (context) => NewTaskModal(collectionNames));
+              builder: (context) =>
+                  NewTaskModal(collectionNames: collectionNames));
         },
         icon: Icon(Icons.add),
       ),
