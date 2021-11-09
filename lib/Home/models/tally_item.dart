@@ -1,6 +1,6 @@
 class TallyItem {
   String name;
-  String id;
+  late String id;
   int streak;
   int count;
   bool isExpanded;
@@ -11,10 +11,12 @@ class TallyItem {
 
   TallyItem({
     required this.name,
-    required this.id,
     this.streak = 0,
     this.count = 0,
     this.isExpanded = false,
     this.isFrozen = false,
-  }) : dateCreated = DateTime.now();
+  }) {
+    dateCreated = DateTime.now();
+    id = DateTime.now().toString();
+  }
 }
