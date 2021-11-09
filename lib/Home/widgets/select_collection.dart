@@ -2,8 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:tally_app/theme/app_theme.dart';
 
 class SelectCollection extends StatefulWidget {
-  const SelectCollection({Key? key, this.collectionNames}) : super(key: key);
+  const SelectCollection({
+    Key? key,
+    this.collectionNames,
+    required this.addToCollectionMemberships,
+    required this.removeFromCollectionMemberships,
+  }) : super(key: key);
   final List<String>? collectionNames;
+  final Function(String) addToCollectionMemberships;
+  final Function(String) removeFromCollectionMemberships;
 
   @override
   _SelectCollectionState createState() => _SelectCollectionState();
@@ -35,7 +42,7 @@ class _SelectCollectionState extends State<SelectCollection> {
           'Want this in a Collection?',
           style: Theme.of(context).textTheme.headline2,
         ),
-        SizedBox(height: 10),
+        SizedBox(height: 15),
         if (widget.collectionNames != null)
           Padding(
             padding: const EdgeInsets.only(left: 15),
@@ -46,7 +53,7 @@ class _SelectCollectionState extends State<SelectCollection> {
           ),
         if (widget.collectionNames != null)
           Padding(
-              padding: const EdgeInsets.only(left: 30, top: 10),
+              padding: const EdgeInsets.only(left: 30, top: 15),
               child: Wrap(
                 spacing: 5,
                 runSpacing: 5,
@@ -85,11 +92,16 @@ class _SelectCollectionState extends State<SelectCollection> {
                           ),
                         ),
                         onTap: () {
-                          setState(() {
-                            if (collectionMap[name] != null) {
-                              collectionMap[name] = !collectionMap[name]!;
+                          if (collectionMap[name] != null) {
+                            if (!collectionMap[name]! == true) {
+                              widget.addToCollectionMemberships(name);
+                            } else {
+                              widget.removeFromCollectionMemberships(name);
                             }
-                          });
+                            setState(() {
+                              collectionMap[name] = !collectionMap[name]!;
+                            });
+                          }
                         },
                       );
                     })
@@ -109,8 +121,7 @@ class _SelectCollectionState extends State<SelectCollection> {
         SizedBox(height: 10),
         Padding(
           padding: const EdgeInsets.only(left: 30),
-          // TODO (LH): handle the keyboard, it covers the text field
-          // i also want tapping out of text field to close keyboard
+          // TODO (LH): Add validation to not add a collection that already exists
           child: TextField(
             focusNode: _focusNode2,
             cursorColor:
@@ -134,6 +145,7 @@ class _SelectCollectionState extends State<SelectCollection> {
                 FocusScope.of(context).requestFocus(_focusNode2);
               });
             },
+            onSubmitted: widget.addToCollectionMemberships,
           ),
         ),
         SizedBox(height: 10),
