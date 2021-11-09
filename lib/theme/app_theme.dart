@@ -7,6 +7,7 @@ class AppTheme {
   static const secondaryColor = Color.fromRGBO(0, 175, 255, 1);
   // static const secondaryColor = Color.fromRGBO(28, 202, 142, 1);
   static const disabledColor = Color.fromRGBO(100, 100, 100, 0.5);
+  static const errorColor = Color.fromRGBO(255, 51, 51, 1);
 
   // consider yellow to blue for light theme
   // FFFF55 #00AEFF
@@ -18,12 +19,17 @@ class AppTheme {
       fontWeight: FontWeight.w700,
       color: Colors.black,
     ),
-    headline1: GoogleFonts.lobster(
+    headline1: GoogleFonts.permanentMarker(
       fontSize: 32.0,
       fontWeight: FontWeight.bold,
       color: Colors.black,
     ),
     headline2: GoogleFonts.caveat(
+      fontSize: 21.0,
+      fontWeight: FontWeight.w700,
+      color: Colors.black,
+    ),
+    button: GoogleFonts.permanentMarker(
       fontSize: 21.0,
       fontWeight: FontWeight.w700,
       color: Colors.black,
@@ -40,6 +46,13 @@ class AppTheme {
     ),
   );
 
+  static TextTheme disabledThemes = TextTheme(
+    button: GoogleFonts.permanentMarker(
+      fontSize: 21.0,
+      fontWeight: FontWeight.w700,
+      color: Colors.grey,
+    ),
+  );
   // 2
   static TextTheme darkTextTheme = TextTheme(
     bodyText1: GoogleFonts.caveat(
@@ -55,6 +68,11 @@ class AppTheme {
       color: Colors.white,
     ),
     headline2: GoogleFonts.caveat(
+      fontSize: 21.0,
+      fontWeight: FontWeight.w700,
+      color: Colors.white,
+    ),
+    button: GoogleFonts.permanentMarker(
       fontSize: 21.0,
       fontWeight: FontWeight.w700,
       color: Colors.white,
