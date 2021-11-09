@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tally_app/Home/widgets/new_task_modal.dart';
 import 'package:tally_app/providers/task_manager.dart';
-import 'package:tally_app/providers/new_task_manager.dart';
 import 'package:tally_app/widgets/bottom_nav.dart';
 import 'Home/home_screen.dart';
 
@@ -39,7 +38,6 @@ class _MyHomePageState extends State<MyHomePage> {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (ctx) => TaskManager()),
-        ChangeNotifierProvider(create: (ctx) => NewTaskManager())
       ],
       child: Scaffold(
         appBar: AppBar(
