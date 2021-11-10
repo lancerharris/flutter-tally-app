@@ -2,9 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:tally_app/theme/app_theme.dart';
 
 class NameTask extends StatefulWidget {
-  const NameTask({Key? key, required this.setTaskNameCallback})
-      : super(key: key);
+  const NameTask({
+    Key? key,
+    required this.setTaskNameCallback,
+    required this.setInputError,
+  }) : super(key: key);
   final Function(String) setTaskNameCallback;
+  final Function(String) setInputError;
 
   @override
   State<NameTask> createState() => _NameTaskState();
@@ -39,6 +43,7 @@ class _NameTaskState extends State<NameTask> {
             child: TextField(
               controller: _nameController,
               focusNode: _focusNode1,
+              maxLength: 40,
               cursorColor:
                   Color.lerp(AppTheme.mainColor, AppTheme.secondaryColor, 0.05),
               decoration: InputDecoration(
