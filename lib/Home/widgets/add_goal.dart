@@ -221,12 +221,6 @@ class PlusNButton extends StatelessWidget {
           bottom: BorderSide(
               color: largeAbs ? Colors.transparent : AppTheme.disabledColor,
               width: 1),
-          right: BorderSide(
-              color: isPositive ? Colors.transparent : AppTheme.disabledColor,
-              width: 1),
-          left: BorderSide(
-              color: isPositive ? AppTheme.disabledColor : Colors.transparent,
-              width: 1),
         ),
       ),
       width: 50,
