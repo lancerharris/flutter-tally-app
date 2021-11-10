@@ -6,10 +6,14 @@ class SelectCollection extends StatefulWidget {
     Key? key,
     this.collectionNames,
     required this.addToCollectionMemberships,
+    required this.setInputError,
     required this.removeFromCollectionMemberships,
+    required this.collectionMemberships,
   }) : super(key: key);
   final List<String>? collectionNames;
+  final List<String> collectionMemberships;
   final Function(String) addToCollectionMemberships;
+  final Function(String) setInputError;
   final Function(String) removeFromCollectionMemberships;
 
   @override
@@ -18,13 +22,31 @@ class SelectCollection extends StatefulWidget {
 
 class _SelectCollectionState extends State<SelectCollection> {
   Map<String, bool> collectionMap = {};
+  String newCollectionError = '';
+  String? _newCollectionName;
 
   late FocusNode _focusNode2;
+  final _collectionController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
     _focusNode2 = FocusNode();
+    _collectionController.addListener(() {
+      if (widget.collectionNames != null) {
+        if (newCollectionError != '' ||
+            widget.collectionNames!.contains(_collectionController.text)) {
+          setState(() {
+            newCollectionError =
+                widget.collectionNames!.contains(_collectionController.text)
+                    ? 'Can\'t have two collections with the same name'
+                    : '';
+
+            widget.setInputError(newCollectionError);
+          });
+        }
+      }
+    });
   }
 
   @override
@@ -124,9 +146,12 @@ class _SelectCollectionState extends State<SelectCollection> {
           // TODO (LH): Add validation to not add a collection that already exists
           child: TextField(
             focusNode: _focusNode2,
+            maxLength: 40,
+            controller: _collectionController,
             cursorColor:
                 Color.lerp(AppTheme.mainColor, AppTheme.secondaryColor, 0.05),
             decoration: InputDecoration(
+              errorText: newCollectionError != '' ? newCollectionError : null,
               focusedBorder: UnderlineInputBorder(
                 borderSide: BorderSide(
                     color: Color.lerp(
@@ -145,7 +170,20 @@ class _SelectCollectionState extends State<SelectCollection> {
                 FocusScope.of(context).requestFocus(_focusNode2);
               });
             },
-            onSubmitted: widget.addToCollectionMemberships,
+            onSubmitted: (inputString) {
+              // remove the previous value sent to collectionMemberships
+              if (_newCollectionName != null &&
+                  _newCollectionName != inputString) {
+                widget.collectionMemberships.remove(_newCollectionName);
+              }
+              if (!widget.collectionMemberships.contains(inputString)) {
+                if (widget.collectionNames == null ||
+                    !widget.collectionNames!.contains(inputString)) {
+                  widget.addToCollectionMemberships(inputString);
+                  _newCollectionName = inputString;
+                }
+              }
+            },
           ),
         ),
         SizedBox(height: 10),

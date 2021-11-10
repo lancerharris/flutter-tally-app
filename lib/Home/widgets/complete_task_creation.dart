@@ -6,10 +6,12 @@ class CompleteTaskCreation extends StatelessWidget {
   const CompleteTaskCreation({
     Key? key,
     required this.completeTaskCreation,
-    this.taskName,
+    required this.inputError,
+    required this.taskName,
   }) : super(key: key);
   final Function(bool) completeTaskCreation;
   final String? taskName;
+  final String inputError;
 
   @override
   Widget build(BuildContext context) {
@@ -50,13 +52,13 @@ class CompleteTaskCreation extends StatelessWidget {
                   bottom: 5,
                   left: 10,
                 ),
-                color: taskName != null
+                color: inputError == '' && taskName != null
                     ? AppTheme.secondaryColor
                     : AppTheme.disabledColor,
                 child: GestureDetector(
                   child: Text(
                     'Add Task',
-                    style: taskName != null
+                    style: inputError == '' && taskName != null
                         ? Theme.of(context).textTheme.button
                         : AppTheme.disabledThemes.button,
                   ),

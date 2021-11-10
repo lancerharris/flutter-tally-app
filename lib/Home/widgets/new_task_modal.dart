@@ -22,6 +22,7 @@ class _NewTaskModalState extends State<NewTaskModal> {
   List<String> _collectionMemberships = [];
   int? _goalCount;
   String? _goalIncrement;
+  String _inputError = '';
 
   void setTaskName(String taskName) {
     if (taskName.trim() != '') {
@@ -43,8 +44,10 @@ class _NewTaskModalState extends State<NewTaskModal> {
 
   void addToCollectionMemberships(String collectionName) {
     if (collectionName.trim() != '') {
+      print('adding collection!!!!');
       _collectionMemberships.add(collectionName);
     } else {
+      print('not adding to collections!!!!');
       // if the user removes their text, remove from _collectionMemberships
       if (widget.collectionNames != null) {
         _collectionMemberships
@@ -59,8 +62,12 @@ class _NewTaskModalState extends State<NewTaskModal> {
     print(_collectionMemberships);
   }
 
+  void setInputError(String inputError) {
+    _inputError = inputError;
+  }
+
   void completeTaskCreation(bool createNewTask) {
-    if (_newTaskName != null && createNewTask) {
+    if (_inputError == '' && _newTaskName != null && createNewTask) {
       var newTallyTask = TallyTask(
         name: _newTaskName!,
         goalCount: _goalCount,
@@ -74,11 +81,11 @@ class _NewTaskModalState extends State<NewTaskModal> {
       }
       print('returning tally task');
       Navigator.pop(context, newTallyTask);
-    } else if (_newTaskName == null && createNewTask) {
+    } else if (_inputError != '' || _newTaskName == null && createNewTask) {
       // TODO (LH): Add notification that you need a task name. snackbar maybe.
       final cantCreateMessage = SnackBar(
         content: Text(
-          'You need to name your Task',
+          _newTaskName == null ? 'You need to name your Task' : _inputError,
           textAlign: TextAlign.center,
           style: Theme.of(context).textTheme.headline2,
         ),
@@ -106,7 +113,9 @@ class _NewTaskModalState extends State<NewTaskModal> {
               physics: BouncingScrollPhysics(),
               padding: EdgeInsets.only(right: 15, left: 15),
               children: [
-                NameTask(setTaskNameCallback: setTaskName),
+                NameTask(
+                    setTaskNameCallback: setTaskName,
+                    setInputError: setInputError),
                 Divider(),
                 AddGoal(
                     setGoalCount: setGoalCount,
@@ -114,6 +123,8 @@ class _NewTaskModalState extends State<NewTaskModal> {
                 Divider(),
                 SelectCollection(
                   collectionNames: widget.collectionNames,
+                  collectionMemberships: _collectionMemberships,
+                  setInputError: setInputError,
                   addToCollectionMemberships: addToCollectionMemberships,
                   removeFromCollectionMemberships:
                       removeFromCollectionMemberships,
@@ -122,6 +133,7 @@ class _NewTaskModalState extends State<NewTaskModal> {
                 CompleteTaskCreation(
                   completeTaskCreation: completeTaskCreation,
                   taskName: _newTaskName,
+                  inputError: _inputError,
                 )
               ],
             ),
