@@ -31,28 +31,13 @@ class _NewTaskModalState extends State<NewTaskModal> {
     }
   }
 
-  void setGoalCount(int goalCount) {
+  void setGoalCount(int? goalCount) {
     _goalCount = goalCount;
     print('goalcount set to $_goalCount');
   }
 
-  void setGoalIncrement(int goalIncrement) {
-    switch (goalIncrement) {
-      case 0:
-        _goalIncrement = 'Daily';
-        break;
-      case 1:
-        _goalIncrement = 'Weekly';
-        break;
-      case 2:
-        _goalIncrement = 'Monthly';
-        break;
-      case 3:
-        _goalIncrement = 'Yearly';
-        break;
-      default:
-        _goalIncrement = null;
-    }
+  void setGoalIncrement(String? goalIncrement) {
+    _goalIncrement = goalIncrement;
     print('setting goal increment to $_goalIncrement');
   }
 
@@ -92,7 +77,6 @@ class _NewTaskModalState extends State<NewTaskModal> {
     } else if (_newTaskName == null && createNewTask) {
       // TODO (LH): Add notification that you need a task name. snackbar maybe.
       final cantCreateMessage = SnackBar(
-        
         content: Text(
           'You need to name your Task',
           textAlign: TextAlign.center,
