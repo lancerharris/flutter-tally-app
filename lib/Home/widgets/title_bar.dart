@@ -14,11 +14,22 @@ class TitleBar extends StatelessWidget {
       child: Container(
         padding: EdgeInsets.all(10),
         color: AppTheme.secondaryColor,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
+        child: Stack(
+          alignment: AlignmentDirectional.centerEnd,
           children: [
-            Text('New Tally Task',
-                style: Theme.of(context).textTheme.headline6),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text('New Tally Task',
+                    style: Theme.of(context).textTheme.headline6),
+              ],
+            ),
+            IconButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              icon: Icon(Icons.cancel_rounded),
+            ),
           ],
         ),
       ),
