@@ -61,15 +61,8 @@ class ParentTaskPanel extends StatelessWidget {
         ),
       ),
       onTap: () {
-        if (parentListItem.isCollection) {
-          Provider.of<TaskManager>(context, listen: false)
-              .updateExpansion(parentListItem.id, parentListItem.isCollection);
-        } else {
-          Provider.of<TaskManager>(context, listen: false).updateExpansion(
-            parentListItem.id,
-            parentListItem.isCollection,
-          );
-        }
+        Provider.of<TaskManager>(context, listen: false)
+            .updateExpansion(parentListItem.id, parentListItem.isCollection);
       },
     );
   }
