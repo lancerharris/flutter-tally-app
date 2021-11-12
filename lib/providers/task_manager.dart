@@ -205,7 +205,45 @@ class TaskManager with ChangeNotifier {
     }
   }
 
-  void addTask() {}
+  void addTask(TallyTask task) {
+    _topLevelList.add(task);
+    if (task.inCollection) {
+      _childItemList.add(task);
+
+      // add the new collection
+      String? newCollectionName;
+      for (var i = 0; i < task.collectionMemberships.length; i++) {
+        if (!collectionNames.contains(task.collectionMemberships[i])) {
+          newCollectionName = task.collectionMemberships[i];
+          // There will only be one new collection per task creation by design.
+          break;
+        }
+      }
+
+      if (newCollectionName != null) {
+        addCollection(TallyCollection(name: newCollectionName));
+      }
+
+      // add as child to all collection memberships
+      task.collectionMemberships.forEach((collectionName) {
+        updateColletionTaskMembers(task.name, collectionName);
+      });
+    } else {
+      _parentItemList.add(task);
+      // only notify if not in collection. otherwise wait for collection add.
+      notifyListeners();
+    }
+
+    // TODO (LH): Save to back end
+  }
+
+  void addCollection(TallyCollection collection) {
+    _topLevelList.add(collection);
+    // add to parent since can't be child by design.
+    _parentItemList.add(collection);
+    notifyListeners();
+    // TODO (LH): Save to back end
+  }
 
   void addTaskToCollection(String taskName, String collectionName) {
     var itemToUpdate = _topLevelList
@@ -221,5 +259,12 @@ class TaskManager with ChangeNotifier {
     updateTopLevelList(collectionName, true, collectionToUpdate, true);
     createParentItemList(true);
     createChildItemList();
+  }
+
+  void updateColletionTaskMembers(String taskName, String collectionName) {
+    var collectionToUpdate = _topLevelList
+        .firstWhere((item) => item.name == collectionName && item.isCollection);
+    (collectionToUpdate as TallyCollection).addTallyTaskName(taskName);
+    notifyListeners();
   }
 }

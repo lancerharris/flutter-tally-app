@@ -84,6 +84,10 @@ class AddTask extends StatelessWidget {
               ),
               builder: (context) => NewTaskModal(
                   collectionNames: collectionNames, taskNames: taskNames));
+
+          if (newTask != null) {
+            Provider.of<TaskManager>(context, listen: false).addTask(newTask);
+          }
         },
         icon: Icon(Icons.add),
       ),

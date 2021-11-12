@@ -76,21 +76,18 @@ class _NewTaskModalState extends State<NewTaskModal> {
     return _taskNameError != '' || _collectionSelectionError != '';
   }
 
-  void completeTaskCreation(bool createNewTask) {
-    if (!errorExists() && _newTaskName != null && createNewTask) {
+  void completeTaskCreation() {
+    if (!errorExists() && _newTaskName != null) {
       var newTallyTask = TallyTask(
         name: _newTaskName!,
         goalCount: _goalCount,
         goalIncrement: _goalIncrement,
       );
       if (_collectionMemberships.isNotEmpty) {
-        // _collectionMemberships.forEach((name) {
-        //   tallyTask.addToCollectionMemberships(name);
-        // });
         newTallyTask.addAllCollectionMemberships(_collectionMemberships);
       }
       Navigator.pop(context, newTallyTask);
-    } else if (errorExists() || _newTaskName == null && createNewTask) {
+    } else if (errorExists() || _newTaskName == null) {
       // TODO (LH): Add notification that you need a task name. snackbar maybe.
       final cantCreateMessage = SnackBar(
         content: Text(
@@ -107,11 +104,6 @@ class _NewTaskModalState extends State<NewTaskModal> {
         backgroundColor: AppTheme.secondaryColor,
       );
       ScaffoldMessenger.of(context).showSnackBar(cantCreateMessage);
-    }
-    // cancel button was pressed
-    // TODO (LH): once I condition on modal closure (an are you sure modal) this will also be for that as well
-    if (!createNewTask) {
-      Navigator.pop(context);
     }
   }
 

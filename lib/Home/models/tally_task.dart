@@ -37,5 +37,6 @@ class TallyTask extends TallyItem {
 
   void addAllCollectionMemberships(List<String> collectionMemberships) {
     this.collectionMemberships = collectionMemberships;
+    inCollection = true;
   }
 }

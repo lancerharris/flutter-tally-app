@@ -9,7 +9,7 @@ class CompleteTaskCreation extends StatelessWidget {
     required this.errorExists,
     required this.taskName,
   }) : super(key: key);
-  final Function(bool) completeTaskCreation;
+  final Function() completeTaskCreation;
   final String? taskName;
   final bool errorExists;
 
@@ -37,9 +37,7 @@ class CompleteTaskCreation extends StatelessWidget {
                     ? Theme.of(context).textTheme.button
                     : AppTheme.disabledThemes.button,
               ),
-              onTap: () {
-                completeTaskCreation(true);
-              },
+              onTap: completeTaskCreation,
             ),
           ),
         ),
