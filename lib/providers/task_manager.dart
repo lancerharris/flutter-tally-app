@@ -113,16 +113,6 @@ class TaskManager with ChangeNotifier {
         (item) => item.id == id && item.isCollection == isCollection);
 
     itemToUpdate.isExpanded = !itemToUpdate.isExpanded;
-    // update _topLevelList
-    updateTopLevelList(itemToUpdate.name, isCollection, itemToUpdate, true);
-
-    if (!isCollection && (itemToUpdate as TallyTask).inCollection) {
-      // if it exists as a child update the child list
-      createChildItemList();
-    } else {
-      // otherwise its a parent and update the parentList
-      createParentItemList();
-    }
   }
 
   int get parentListLength {
