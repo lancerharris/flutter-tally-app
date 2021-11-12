@@ -98,8 +98,10 @@ class TaskManager with ChangeNotifier {
     );
 
     // some initialization of mock data. could have hard coded the result
-    addTaskToCollection("task_2", "first collection");
-    addTaskToCollection("task_3", "first collection");
+    updateTaskCollectionMemberships("task_2", "first collection");
+    updateTaskCollectionMemberships("task_3", "first collection");
+    updateColletionTaskMembers("task_2", "first collection");
+    updateColletionTaskMembers("task_3", "first collection");
 
     createParentItemList();
     createChildItemList();
@@ -245,26 +247,17 @@ class TaskManager with ChangeNotifier {
     // TODO (LH): Save to back end
   }
 
-  void addTaskToCollection(String taskName, String collectionName) {
-    var itemToUpdate = _topLevelList
-        .firstWhere((item) => item.name == taskName && !item.isCollection);
-    (itemToUpdate as TallyTask).addToCollectionMemberships(collectionName);
-
-    var collectionToUpdate = _topLevelList
-        .firstWhere((item) => item.name == collectionName && item.isCollection);
-    (collectionToUpdate as TallyCollection).addTallyTaskName(taskName);
-
-    // only notify listeners on last call
-    updateTopLevelList(taskName, false, itemToUpdate, true);
-    updateTopLevelList(collectionName, true, collectionToUpdate, true);
-    createParentItemList(true);
-    createChildItemList();
-  }
-
   void updateColletionTaskMembers(String taskName, String collectionName) {
     var collectionToUpdate = _topLevelList
         .firstWhere((item) => item.name == collectionName && item.isCollection);
     (collectionToUpdate as TallyCollection).addTallyTaskName(taskName);
+    notifyListeners();
+  }
+
+  void updateTaskCollectionMemberships(String taskName, String collectionName) {
+    var itemToUpdate = _topLevelList
+        .firstWhere((item) => item.name == taskName && !item.isCollection);
+    (itemToUpdate as TallyTask).addToCollectionMemberships(collectionName);
     notifyListeners();
   }
 }
