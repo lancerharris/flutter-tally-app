@@ -69,6 +69,8 @@ class AddTask extends StatelessWidget {
         onPressed: () async {
           var collectionNames =
               Provider.of<TaskManager>(context, listen: false).collectionNames;
+          var taskNames =
+              Provider.of<TaskManager>(context, listen: false).taskNames;
           var newTask = await showModalBottomSheet(
               isScrollControlled: true,
               shape: RoundedRectangleBorder(
@@ -80,8 +82,8 @@ class AddTask extends StatelessWidget {
                 maxHeight: 500,
                 maxWidth: 750,
               ),
-              builder: (context) =>
-                  NewTaskModal(collectionNames: collectionNames));
+              builder: (context) => NewTaskModal(
+                  collectionNames: collectionNames, taskNames: taskNames));
         },
         icon: Icon(Icons.add),
       ),

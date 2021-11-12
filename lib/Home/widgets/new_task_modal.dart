@@ -10,8 +10,10 @@ import 'package:tally_app/theme/app_theme.dart';
 import '../models/tally_task.dart';
 
 class NewTaskModal extends StatefulWidget {
-  const NewTaskModal({Key? key, this.collectionNames}) : super(key: key);
+  const NewTaskModal({Key? key, this.collectionNames, this.taskNames})
+      : super(key: key);
   final List<String>? collectionNames;
+  final List<String>? taskNames;
 
   @override
   State<NewTaskModal> createState() => _NewTaskModalState();
@@ -22,7 +24,9 @@ class _NewTaskModalState extends State<NewTaskModal> {
   List<String> _collectionMemberships = [];
   int? _goalCount;
   String? _goalIncrement;
-  String _inputError = '';
+
+  String _taskNameError = '';
+  String _collectionSelectionError = '';
 
   void setTaskName(String taskName) {
     if (taskName.trim() != '') {
@@ -34,40 +38,46 @@ class _NewTaskModalState extends State<NewTaskModal> {
 
   void setGoalCount(int? goalCount) {
     _goalCount = goalCount;
-    print('goalcount set to $_goalCount');
   }
 
   void setGoalIncrement(String? goalIncrement) {
     _goalIncrement = goalIncrement;
-    print('setting goal increment to $_goalIncrement');
   }
 
   void addToCollectionMemberships(String collectionName) {
     if (collectionName.trim() != '') {
-      print('adding collection!!!!');
       _collectionMemberships.add(collectionName);
     } else {
-      print('not adding to collections!!!!');
       // if the user removes their text, remove from _collectionMemberships
       if (widget.collectionNames != null) {
         _collectionMemberships
             .removeWhere((name) => !widget.collectionNames!.contains(name));
       }
     }
-    print(_collectionMemberships);
   }
 
   void removeFromCollectionMemberships(String collectionName) {
     _collectionMemberships.removeWhere((name) => name == collectionName);
-    print(_collectionMemberships);
   }
 
-  void setInputError(String inputError) {
-    _inputError = inputError;
+  void setInputError(String errorKey, String inputError) {
+    switch (errorKey) {
+      case 'taskNameError':
+        _taskNameError = inputError;
+
+        break;
+      case 'collectionSelectionError':
+        _collectionSelectionError = inputError;
+        break;
+    }
+  }
+
+  bool errorExists() {
+    return _taskNameError != '' || _collectionSelectionError != '';
   }
 
   void completeTaskCreation(bool createNewTask) {
-    if (_inputError == '' && _newTaskName != null && createNewTask) {
+    if (!errorExists() && _newTaskName != null && createNewTask) {
       var newTallyTask = TallyTask(
         name: _newTaskName!,
         goalCount: _goalCount,
@@ -79,13 +89,18 @@ class _NewTaskModalState extends State<NewTaskModal> {
         // });
         newTallyTask.addAllCollectionMemberships(_collectionMemberships);
       }
-      print('returning tally task');
       Navigator.pop(context, newTallyTask);
-    } else if (_inputError != '' || _newTaskName == null && createNewTask) {
+    } else if (errorExists() || _newTaskName == null && createNewTask) {
       // TODO (LH): Add notification that you need a task name. snackbar maybe.
       final cantCreateMessage = SnackBar(
         content: Text(
-          _newTaskName == null ? 'You need to name your Task' : _inputError,
+          _taskNameError != ''
+              ? _taskNameError
+              : _collectionSelectionError != ''
+                  ? _collectionSelectionError
+                  : _newTaskName == null
+                      ? 'You need to name your Task'
+                      : 'Unknown error occurred',
           textAlign: TextAlign.center,
           style: Theme.of(context).textTheme.headline2,
         ),
@@ -96,9 +111,14 @@ class _NewTaskModalState extends State<NewTaskModal> {
     // cancel button was pressed
     // TODO (LH): once I condition on modal closure (an are you sure modal) this will also be for that as well
     if (!createNewTask) {
-      print('canceling creation');
       Navigator.pop(context);
     }
+  }
+
+  // TODO (LH): for when i remove the cancel button and put an x near the top of modal
+  void cancelTaskCreation() {
+    // TODO (LH): once I condition on modal closure (an are you sure modal) this will also be for that as well
+    Navigator.pop(context);
   }
 
   @override
@@ -109,33 +129,36 @@ class _NewTaskModalState extends State<NewTaskModal> {
         children: [
           TitleBar(),
           Expanded(
-            child: ListView(
+            child: SingleChildScrollView(
               physics: BouncingScrollPhysics(),
               padding: EdgeInsets.only(right: 15, left: 15),
-              children: [
-                NameTask(
-                    setTaskNameCallback: setTaskName,
-                    setInputError: setInputError),
-                Divider(),
-                AddGoal(
-                    setGoalCount: setGoalCount,
-                    setGoalIncrement: setGoalIncrement),
-                Divider(),
-                SelectCollection(
-                  collectionNames: widget.collectionNames,
-                  collectionMemberships: _collectionMemberships,
-                  setInputError: setInputError,
-                  addToCollectionMemberships: addToCollectionMemberships,
-                  removeFromCollectionMemberships:
-                      removeFromCollectionMemberships,
-                ),
-                Divider(),
-                CompleteTaskCreation(
-                  completeTaskCreation: completeTaskCreation,
-                  taskName: _newTaskName,
-                  inputError: _inputError,
-                )
-              ],
+              child: Column(
+                children: [
+                  NameTask(
+                      taskNames: widget.taskNames,
+                      setTaskNameCallback: setTaskName,
+                      setInputError: setInputError),
+                  Divider(),
+                  AddGoal(
+                      setGoalCount: setGoalCount,
+                      setGoalIncrement: setGoalIncrement),
+                  Divider(),
+                  SelectCollection(
+                    collectionNames: widget.collectionNames,
+                    collectionMemberships: _collectionMemberships,
+                    setInputError: setInputError,
+                    addToCollectionMemberships: addToCollectionMemberships,
+                    removeFromCollectionMemberships:
+                        removeFromCollectionMemberships,
+                  ),
+                  Divider(),
+                  CompleteTaskCreation(
+                    completeTaskCreation: completeTaskCreation,
+                    taskName: _newTaskName,
+                    errorExists: errorExists(),
+                  )
+                ],
+              ),
             ),
           ),
         ],

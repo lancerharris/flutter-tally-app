@@ -6,7 +6,7 @@ import '../Home/models/tally_task.dart';
 class TaskManager with ChangeNotifier {
   List<TallyItem> _topLevelList = [];
   List<TallyItem> _parentItemList = [];
-  List<TallyItem> _childItemList = [];
+  List<TallyTask> _childItemList = [];
 
   Map<String, dynamic> tallyTasks = {
     "tallyTask1": {
@@ -130,6 +130,20 @@ class TaskManager with ChangeNotifier {
     return [...parentItemList];
   }
 
+  List<TallyTask> get childItemList {
+    return [..._childItemList];
+  }
+
+  List<String> get taskNames {
+    List<String> taskNames = [];
+    _topLevelList.forEach((item) {
+      if (!item.isCollection) {
+        taskNames.add(item.name);
+      }
+    });
+    return taskNames;
+  }
+
   void createParentItemList([bool snubListeners = false]) {
     // Don't return tasks that are a part of a collection.
     _parentItemList = [];
@@ -190,9 +204,7 @@ class TaskManager with ChangeNotifier {
     }
   }
 
-  void addTask() {
-    print('you\'ve made it from one provider to another');
-  }
+  void addTask() {}
 
   void addTaskToCollection(String taskName, String collectionName) {
     var itemToUpdate = _topLevelList
