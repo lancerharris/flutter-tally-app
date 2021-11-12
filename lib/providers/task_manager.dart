@@ -113,6 +113,7 @@ class TaskManager with ChangeNotifier {
         (item) => item.id == id && item.isCollection == isCollection);
 
     itemToUpdate.isExpanded = !itemToUpdate.isExpanded;
+    notifyListeners();
   }
 
   int get parentListLength {
