@@ -109,9 +109,10 @@ class TaskManager with ChangeNotifier {
     // choosing not to update initial data
     var itemToUpdate = _topLevelList.firstWhere(
         (item) => item.id == id && item.isCollection == isCollection);
+
     itemToUpdate.isExpanded = !itemToUpdate.isExpanded;
     // update _topLevelList
-    updateTopLevelList(id, isCollection, itemToUpdate, true);
+    updateTopLevelList(itemToUpdate.name, isCollection, itemToUpdate, true);
 
     if (!isCollection && (itemToUpdate as TallyTask).inCollection) {
       // if it exists as a child update the child list
