@@ -13,7 +13,7 @@ class SelectCollection extends StatefulWidget {
   final List<String>? collectionNames;
   final List<String> collectionMemberships;
   final Function(String) addToCollectionMemberships;
-  final Function(String) setInputError;
+  final Function(String, String) setInputError;
   final Function(String) removeFromCollectionMemberships;
 
   @override
@@ -25,24 +25,25 @@ class _SelectCollectionState extends State<SelectCollection> {
   String newCollectionError = '';
   String? _newCollectionName;
 
-  late FocusNode _focusNode2;
+  final _focusNode2 = FocusNode();
   final _collectionController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    _focusNode2 = FocusNode();
     _collectionController.addListener(() {
       if (widget.collectionNames != null) {
-        if (newCollectionError != '' ||
-            widget.collectionNames!.contains(_collectionController.text)) {
+        // check if the error is already there and if it needs to be there
+        var collectionAlreadyExists =
+            widget.collectionNames!.contains(_collectionController.text);
+        if (newCollectionError != '' || collectionAlreadyExists) {
           setState(() {
-            newCollectionError =
-                widget.collectionNames!.contains(_collectionController.text)
-                    ? 'Can\'t have two collections with the same name'
-                    : '';
+            newCollectionError = collectionAlreadyExists
+                ? 'Can\'t have two collections with the same name'
+                : '';
 
-            widget.setInputError(newCollectionError);
+            widget.setInputError(
+                'collectionSelectionError', newCollectionError);
           });
         }
       }
@@ -145,9 +146,9 @@ class _SelectCollectionState extends State<SelectCollection> {
           padding: const EdgeInsets.only(left: 30),
           // TODO (LH): Add validation to not add a collection that already exists
           child: TextField(
+            controller: _collectionController,
             focusNode: _focusNode2,
             maxLength: 40,
-            controller: _collectionController,
             cursorColor:
                 Color.lerp(AppTheme.mainColor, AppTheme.secondaryColor, 0.05),
             decoration: InputDecoration(
@@ -194,6 +195,8 @@ class _SelectCollectionState extends State<SelectCollection> {
   @override
   void dispose() {
     _focusNode2.dispose();
+    _collectionController.dispose();
+
     super.dispose();
   }
 }
