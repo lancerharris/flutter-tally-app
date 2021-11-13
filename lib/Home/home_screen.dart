@@ -8,19 +8,26 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var parentListLength = Provider.of<TaskManager>(context).parentListLength;
+    void updateParentItemPositios(
+        int oldPositionInList, int newPositionInList) {
+      Provider.of<TaskManager>(context, listen: false)
+          .updateItemPositions(oldPositionInList, newPositionInList, true);
+    }
 
-    return parentListLength > 0
-        ? ListView.separated(
+    var parentListItems = Provider.of<TaskManager>(context).parentItemList;
+    return parentListItems.length > 0
+        ? ReorderableListView(
             padding: EdgeInsets.all(8),
-            itemCount: parentListLength,
-            itemBuilder: (context, index) {
-              return ParentTaskPanel(index: index);
-            },
-            separatorBuilder: (_, index) => SizedBox(
-              height: 5,
-            ),
-          )
+            children: [
+              for (var i = 0; i < parentListItems.length; i++)
+                ParentTaskPanel(
+                  key: ValueKey('$i'),
+                  parentListItem: parentListItems[i],
+                ),
+            ],
+            onReorder: (oldPositionInList, newPositionInList) {
+              updateParentItemPositios(oldPositionInList, newPositionInList);
+            })
         : const Center(
             child: Text('Start adding tally tasks!'),
           );

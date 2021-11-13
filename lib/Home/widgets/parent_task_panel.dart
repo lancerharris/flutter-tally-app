@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tally_app/Home/models/tally_collection.dart';
+import 'package:tally_app/Home/models/tally_item.dart';
 import 'package:tally_app/providers/task_manager.dart';
 import 'child_task_panel.dart';
 
 class ParentTaskPanel extends StatelessWidget {
-  final int index;
-  const ParentTaskPanel({Key? key, required this.index}) : super(key: key);
+  const ParentTaskPanel({Key? key, required this.parentListItem})
+      : super(key: key);
+  final TallyItem parentListItem;
 
   @override
   Widget build(BuildContext context) {
-    var parentListItem =
-        Provider.of<TaskManager>(context).getParentItemByIndex(index);
     var isExpanded = parentListItem.isExpanded;
 
     return GestureDetector(
@@ -46,7 +46,8 @@ class ParentTaskPanel extends StatelessWidget {
                     return Container(
                       margin: EdgeInsets.only(left: 10),
                       child: ChildTaskPanel(
-                        childItemName: parentListItem.tallyTaskNames[index],
+                        childItemName: (parentListItem as TallyCollection)
+                            .tallyTaskNames[index],
                         // childPanelItem: Provider.of<TallyTasks>(context)
                         //     .getChildPanelById(panelListItem.id, index))
                       ),
@@ -54,7 +55,8 @@ class ParentTaskPanel extends StatelessWidget {
                     // child: Center(child: Text('Entry $index')));
                   },
                   separatorBuilder: (context, index) => Divider(),
-                  itemCount: parentListItem.tallyTaskNames.length,
+                  itemCount:
+                      (parentListItem as TallyCollection).tallyTaskNames.length,
                 )
             ],
           ),

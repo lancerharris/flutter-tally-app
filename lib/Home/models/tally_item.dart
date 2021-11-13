@@ -7,7 +7,7 @@ class TallyItem {
   bool isFrozen;
   late DateTime dateCreated;
   bool isCollection = false;
-  int? positionInList;
+  int positionInList;
 
   TallyItem({
     required this.name,
@@ -15,6 +15,8 @@ class TallyItem {
     this.count = 0,
     this.isExpanded = false,
     this.isFrozen = false,
+    this.positionInList =
+        0, // later remove the default, since all new task creation will give a position in list
   }) {
     dateCreated = DateTime.now();
     id = DateTime.now().toString();

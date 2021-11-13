@@ -121,7 +121,7 @@ class TaskManager with ChangeNotifier {
   }
 
   List<TallyItem> get parentItemList {
-    return [...parentItemList];
+    return [..._parentItemList];
   }
 
   List<TallyTask> get childItemList {
@@ -141,17 +141,57 @@ class TaskManager with ChangeNotifier {
   void createParentItemList([bool snubListeners = false]) {
     // Don't return tasks that are a part of a collection.
     _parentItemList = [];
+    var j = 0; // TODO: Remove when positionInList is set on task creation
     for (int i = 0; i < _topLevelList.length; i++) {
       var item = _topLevelList[i];
       if (item.isCollection ||
           (!item.isCollection && !(item as TallyTask).inCollection)) {
-        item.positionInList = i;
+        // TODO: remove when positionInList is set on task creation
+        item.positionInList = j;
+        j++;
+        print('initial position: ${item.positionInList}');
         _parentItemList.add(item);
       }
     }
+
+    _parentItemList.sort((a, b) => a.positionInList < b.positionInList
+        ? -1
+        : a.positionInList == b.positionInList
+            ? 0
+            : 1);
     if (!snubListeners) {
       notifyListeners();
     }
+  }
+
+  // ? maybe this would get expensive with many collections or tasks
+  // ? instead of updating many collections maybe I could update a single map
+  // ? that holds info with task names as keys and positions as values.
+  // ? that way there may be less writes to db or whatever
+  void updateItemPositions(
+      int oldPositionInList, int newPositionInList, bool isParentList) {
+    final operableList = isParentList ? _parentItemList : _childItemList;
+
+    final item = operableList.removeAt(oldPositionInList);
+    print('old position index $oldPositionInList');
+    print('new position index $newPositionInList');
+
+    if (newPositionInList < oldPositionInList) {
+      item.positionInList = newPositionInList;
+      operableList.insert(newPositionInList, item);
+
+      for (var i = newPositionInList + 1; i <= oldPositionInList; i++) {
+        operableList[i].positionInList += 1;
+      }
+    } else if (newPositionInList > oldPositionInList) {
+      item.positionInList = newPositionInList - 1;
+      operableList.insert(newPositionInList - 1, item);
+
+      for (var i = oldPositionInList; i < newPositionInList - 1; i++) {
+        operableList[i].positionInList -= 1;
+      }
+    }
+    notifyListeners();
   }
 
   void createChildItemList([bool snubListeners = false]) {
@@ -159,10 +199,17 @@ class TaskManager with ChangeNotifier {
     for (int i = 0; i < _topLevelList.length; i++) {
       var item = _topLevelList[i];
       if (!item.isCollection && (item as TallyTask).inCollection) {
+        // TODO: remove when positionInList is set on task creation
         item.positionInList = i;
         _childItemList.add(item);
       }
     }
+
+    _childItemList.sort((a, b) => a.positionInList < b.positionInList
+        ? -1
+        : a.positionInList == b.positionInList
+            ? 0
+            : 1);
 
     if (!snubListeners) {
       notifyListeners();
