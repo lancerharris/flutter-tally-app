@@ -230,7 +230,7 @@ class TaskManager with ChangeNotifier {
     return _parentItemList[itemIndex];
   }
 
-  TallyItem getChildItemByName(String itemName) {
+  TallyTask getChildItemByName(String itemName) {
     return _childItemList.firstWhere((item) => item.name == itemName);
   }
 

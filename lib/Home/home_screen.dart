@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:tally_app/Home/models/tally_collection.dart';
+import 'package:tally_app/Home/models/tally_task.dart';
 import 'package:tally_app/Home/widgets/parent_task_panel.dart';
 import 'package:tally_app/providers/task_manager.dart';
 
@@ -8,10 +10,20 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    void updateParentItemPositios(
+    void updateParentItemPositions(
         int oldPositionInList, int newPositionInList) {
       Provider.of<TaskManager>(context, listen: false)
           .updateItemPositions(oldPositionInList, newPositionInList, true);
+    }
+
+    List<TallyTask> getChildListItems(List<String> childNames) {
+      List<TallyTask> childTasks = [];
+      childNames.forEach((name) {
+        var childItem = Provider.of<TaskManager>(context, listen: false)
+            .getChildItemByName(name);
+        childTasks.add(childItem);
+      });
+      return childTasks;
     }
 
     var parentListItems = Provider.of<TaskManager>(context).parentItemList;
@@ -23,10 +35,15 @@ class HomeScreen extends StatelessWidget {
                 ParentTaskPanel(
                   key: ValueKey('$i'),
                   parentListItem: parentListItems[i],
+                  childListItems: parentListItems[i].isCollection
+                      ? getChildListItems(
+                          (parentListItems[i] as TallyCollection)
+                              .tallyTaskNames)
+                      : null,
                 ),
             ],
             onReorder: (oldPositionInList, newPositionInList) {
-              updateParentItemPositios(oldPositionInList, newPositionInList);
+              updateParentItemPositions(oldPositionInList, newPositionInList);
             })
         : const Center(
             child: Text('Start adding tally tasks!'),

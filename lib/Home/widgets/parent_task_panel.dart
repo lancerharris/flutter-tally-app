@@ -2,13 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tally_app/Home/models/tally_collection.dart';
 import 'package:tally_app/Home/models/tally_item.dart';
+import 'package:tally_app/Home/models/tally_task.dart';
 import 'package:tally_app/providers/task_manager.dart';
 import 'child_task_panel.dart';
 
 class ParentTaskPanel extends StatelessWidget {
-  const ParentTaskPanel({Key? key, required this.parentListItem})
+  const ParentTaskPanel(
+      {Key? key, required this.parentListItem, this.childListItems})
       : super(key: key);
   final TallyItem parentListItem;
+  final List<TallyTask>? childListItems;
 
   @override
   Widget build(BuildContext context) {
@@ -37,19 +40,14 @@ class ParentTaskPanel extends StatelessWidget {
                 SizedBox(
                   height: 10,
                 ),
-              if (parentListItem.isCollection &&
-                  isExpanded &&
-                  (parentListItem as TallyCollection).tallyTaskNames.length > 0)
+              if (isExpanded && childListItems != null)
                 ListView.separated(
                   shrinkWrap: true,
                   itemBuilder: (context, index) {
                     return Container(
                       margin: EdgeInsets.only(left: 10),
                       child: ChildTaskPanel(
-                        childItemName: (parentListItem as TallyCollection)
-                            .tallyTaskNames[index],
-                        // childPanelItem: Provider.of<TallyTasks>(context)
-                        //     .getChildPanelById(panelListItem.id, index))
+                        childItem: childListItems![index],
                       ),
                     );
                     // child: Center(child: Text('Entry $index')));

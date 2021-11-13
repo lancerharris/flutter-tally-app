@@ -1,17 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:tally_app/Home/models/tally_task.dart';
 import 'package:tally_app/providers/task_manager.dart';
 
 class ChildTaskPanel extends StatelessWidget {
-  final String childItemName;
-  const ChildTaskPanel({Key? key, required this.childItemName})
-      : super(key: key);
+  const ChildTaskPanel({Key? key, required this.childItem}) : super(key: key);
+  final TallyTask childItem;
 
   @override
   Widget build(BuildContext context) {
-    var childPanelItem =
-        Provider.of<TaskManager>(context).getChildItemByName(childItemName);
-    var isExpanded = childPanelItem.isExpanded;
+    var isExpanded = childItem.isExpanded;
     return GestureDetector(
       child: Card(
         child: Container(
@@ -23,7 +21,7 @@ class ChildTaskPanel extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    childPanelItem.name,
+                    childItem.name,
                     style: Theme.of(context).textTheme.headline2,
                   ),
                   isExpanded
@@ -41,8 +39,8 @@ class ChildTaskPanel extends StatelessWidget {
       ),
       onTap: () {
         Provider.of<TaskManager>(context, listen: false).updateExpansion(
-          childPanelItem.id,
-          childPanelItem.isCollection,
+          childItem.id,
+          childItem.isCollection,
         );
       },
     );
