@@ -88,7 +88,6 @@ class _NewTaskModalState extends State<NewTaskModal> {
       }
       Navigator.pop(context, newTallyTask);
     } else if (errorExists() || _newTaskName == null) {
-      // TODO (LH): Add notification that you need a task name. snackbar maybe.
       final cantCreateMessage = SnackBar(
         content: Text(
           _taskNameError != ''
@@ -107,7 +106,6 @@ class _NewTaskModalState extends State<NewTaskModal> {
     }
   }
 
-  // TODO (LH): for when i remove the cancel button and put an x near the top of modal
   void cancelTaskCreation() {
     // TODO (LH): once I condition on modal closure (an are you sure modal) this will also be for that as well
     Navigator.pop(context);

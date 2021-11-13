@@ -144,7 +144,6 @@ class _SelectCollectionState extends State<SelectCollection> {
         SizedBox(height: 10),
         Padding(
           padding: const EdgeInsets.only(left: 30),
-          // TODO (LH): Add validation to not add a collection that already exists
           child: TextField(
             controller: _collectionController,
             focusNode: _focusNode2,
