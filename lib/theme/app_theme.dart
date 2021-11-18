@@ -14,7 +14,7 @@ class AppTheme {
 
   // 1
   static TextTheme lightTextTheme = TextTheme(
-    bodyText1: GoogleFonts.caveat(
+    bodyText1: GoogleFonts.handlee(
       fontSize: 14.0,
       fontWeight: FontWeight.w700,
       color: Colors.black,
@@ -24,7 +24,7 @@ class AppTheme {
       fontWeight: FontWeight.bold,
       color: Colors.black,
     ),
-    headline2: GoogleFonts.caveat(
+    headline2: GoogleFonts.handlee(
       fontSize: 21.0,
       fontWeight: FontWeight.w700,
       color: Colors.black,
@@ -34,7 +34,7 @@ class AppTheme {
       fontWeight: FontWeight.w700,
       color: Colors.black,
     ),
-    headline3: GoogleFonts.caveat(
+    headline3: GoogleFonts.handlee(
       fontSize: 16.0,
       fontWeight: FontWeight.w600,
       color: Colors.black,
@@ -55,7 +55,7 @@ class AppTheme {
   );
   // 2
   static TextTheme darkTextTheme = TextTheme(
-    bodyText1: GoogleFonts.caveat(
+    bodyText1: GoogleFonts.handlee(
       fontSize: 14.0,
       fontWeight: FontWeight.w700,
       color: Colors.white,
@@ -67,7 +67,7 @@ class AppTheme {
       fontWeight: FontWeight.bold,
       color: Colors.white,
     ),
-    headline2: GoogleFonts.caveat(
+    headline2: GoogleFonts.handlee(
       fontSize: 21.0,
       fontWeight: FontWeight.w700,
       color: Colors.white,
@@ -77,7 +77,7 @@ class AppTheme {
       fontWeight: FontWeight.w700,
       color: Colors.white,
     ),
-    headline3: GoogleFonts.caveat(
+    headline3: GoogleFonts.handlee(
       fontSize: 16.0,
       fontWeight: FontWeight.w600,
       color: Colors.white,
