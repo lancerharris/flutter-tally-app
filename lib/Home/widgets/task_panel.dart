@@ -6,7 +6,6 @@ import 'package:tally_app/Home/models/tally_item.dart';
 import 'package:tally_app/Home/models/tally_task.dart';
 import 'package:tally_app/providers/task_manager.dart';
 import 'package:tally_app/theme/app_theme.dart';
-import 'child_task_panel.dart';
 
 class TaskPanel extends StatelessWidget {
   const TaskPanel({Key? key, required this.listItem, this.childListItems})
