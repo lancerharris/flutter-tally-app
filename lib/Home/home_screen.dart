@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tally_app/Home/models/tally_collection.dart';
 import 'package:tally_app/Home/models/tally_task.dart';
-import 'package:tally_app/Home/widgets/parent_task_panel.dart';
+import 'package:tally_app/Home/widgets/task_panel.dart';
 import 'package:tally_app/custom_widgets/new_reorderable_list.dart';
 import 'package:tally_app/providers/task_manager.dart';
 import 'dart:ui';
