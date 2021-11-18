@@ -1,36 +1,97 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:tally_app/Home/models/tally_collection.dart';
 import 'package:tally_app/Home/models/tally_item.dart';
 import 'package:tally_app/Home/models/tally_task.dart';
 import 'package:tally_app/providers/task_manager.dart';
+import 'package:tally_app/theme/app_theme.dart';
 import 'child_task_panel.dart';
 
-class ParentTaskPanel extends StatelessWidget {
-  const ParentTaskPanel(
-      {Key? key, required this.parentListItem, this.childListItems})
+class TaskPanel extends StatelessWidget {
+  const TaskPanel({Key? key, required this.listItem, this.childListItems})
       : super(key: key);
-  final TallyItem parentListItem;
+  final TallyItem listItem;
   final List<TallyTask>? childListItems;
 
   @override
   Widget build(BuildContext context) {
-    var isExpanded = parentListItem.isExpanded;
+    var isExpanded = listItem.isExpanded;
 
     return GestureDetector(
       child: Card(
         child: Container(
-          padding: const EdgeInsets.all(5),
-          margin: const EdgeInsets.all(5),
+          padding: const EdgeInsets.all(8),
           child: Column(
             children: [
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(
-                    parentListItem.name,
-                    style: Theme.of(context).textTheme.headline2,
+                  Expanded(
+                    child: Text(
+                      listItem.name,
+                      style: Theme.of(context).textTheme.headline3,
+                    ),
                   ),
+                  Expanded(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        Stack(
+                          alignment: Alignment.center,
+                          children: [
+                            Container(
+                              width: 30,
+                              height: 25,
+                              decoration: BoxDecoration(
+                                color: AppTheme.secondaryColor,
+                                shape: BoxShape.circle,
+                              ),
+                            ),
+                            Text(
+                              '${NumberFormat("##,###", "en_US").format(listItem.streak)}',
+                              style: Theme.of(context).textTheme.headline3,
+                            ),
+                          ],
+                        ),
+                        SizedBox(width: 2),
+                        Stack(
+                          alignment: Alignment.center,
+                          children: [
+                            Container(
+                              width: 30,
+                              height: 25,
+                              decoration: BoxDecoration(
+                                color: AppTheme.mainColor,
+                                shape: BoxShape.circle,
+                              ),
+                            ),
+                            Text(
+                                '${NumberFormat("##,###", "en_US").format(listItem.count)}',
+                                style: Theme.of(context).textTheme.headline3),
+                          ],
+                        ),
+                        SizedBox(width: 2),
+                        Stack(
+                          alignment: Alignment.center,
+                          children: [
+                            Container(
+                              width: 30,
+                              height: 25,
+                              decoration: BoxDecoration(
+                                color: AppTheme.disabledColor,
+                                shape: BoxShape.circle,
+                              ),
+                            ),
+                            Text(
+                                '${NumberFormat("##,###", "en_US").format(listItem.count)}',
+                                style: Theme.of(context).textTheme.headline3),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(width: 25),
                   isExpanded
                       ? Icon(Icons.expand_less)
                       : Icon(Icons.expand_more),
@@ -45,24 +106,27 @@ class ParentTaskPanel extends StatelessWidget {
                   shrinkWrap: true,
                   itemBuilder: (context, index) {
                     return Container(
-                      margin: EdgeInsets.only(left: 10),
-                      child: ChildTaskPanel(
-                        childItem: childListItems![index],
-                      ),
+                      child: TaskPanel(
+                          listItem: childListItems![index],
+                          // passing null right now since not allowing 3 level
+                          // nesting
+                          childListItems: null),
                     );
                     // child: Center(child: Text('Entry $index')));
                   },
                   separatorBuilder: (context, index) => Divider(),
                   itemCount:
-                      (parentListItem as TallyCollection).tallyTaskNames.length,
+                      (listItem as TallyCollection).tallyTaskNames.length,
                 )
             ],
           ),
         ),
       ),
       onTap: () {
-        Provider.of<TaskManager>(context, listen: false)
-            .updateExpansion(parentListItem.id, parentListItem.isCollection);
+        Provider.of<TaskManager>(context, listen: false).updateExpansion(
+          listItem.id,
+          listItem.isCollection,
+        );
       },
     );
   }

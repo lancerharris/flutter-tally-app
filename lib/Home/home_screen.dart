@@ -38,9 +38,9 @@ class HomeScreen extends StatelessWidget {
             padding: EdgeInsets.all(8),
             children: [
               for (var i = 0; i < parentListItems.length; i++)
-                ParentTaskPanel(
+                TaskPanel(
                   key: ValueKey('$i'),
-                  parentListItem: parentListItems[i],
+                  listItem: parentListItems[i],
                   childListItems: parentListItems[i].isCollection
                       ? getChildListItems(
                           (parentListItems[i] as TallyCollection)
