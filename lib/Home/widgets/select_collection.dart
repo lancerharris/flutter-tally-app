@@ -124,10 +124,17 @@ class _SelectCollectionState extends State<SelectCollection> {
               if (widget.collectionNames != null)
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [_collectionOption1, _collectionOption2]
+                  // a bit hacky with the spacer in the list below
+                  children: [_collectionOption1, 'spacer', _collectionOption2]
                       .map((collectionOption) {
                     if (_collectionOption == null) {
                       _collectionOption = collectionOption;
+                    }
+                    if (collectionOption == 'spacer') {
+                      return Text(
+                        'Or',
+                        style: Theme.of(context).textTheme.headline3,
+                      );
                     }
                     return GestureDetector(
                       child: collectionOptions(
