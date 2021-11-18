@@ -50,7 +50,7 @@ class _AddGoalState extends State<AddGoal> {
                     borderRadius: BorderRadius.circular(30),
                     child: Container(
                       padding: EdgeInsets.only(
-                          top: 5, right: 20, bottom: 5, left: 20),
+                          top: 5, right: 15, bottom: 5, left: 15),
                       color: _addGoal
                           ? Color.lerp(AppTheme.mainColor,
                               AppTheme.secondaryColor, 0.0750)
@@ -75,7 +75,7 @@ class _AddGoalState extends State<AddGoal> {
                     borderRadius: BorderRadius.circular(30),
                     child: Container(
                       padding: EdgeInsets.only(
-                          top: 5, right: 20, bottom: 5, left: 20),
+                          top: 5, right: 15, bottom: 5, left: 15),
                       color: _addGoal
                           ? AppTheme.disabledColor
                           : Color.lerp(AppTheme.mainColor,
@@ -101,7 +101,7 @@ class _AddGoalState extends State<AddGoal> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Text('I want to get',
-                        style: Theme.of(context).textTheme.headline2),
+                        style: Theme.of(context).textTheme.headline3),
                     SizedBox(width: 15),
                     ClipRRect(
                       borderRadius: BorderRadius.circular(25),
@@ -170,7 +170,7 @@ class _AddGoalState extends State<AddGoal> {
                     ),
                     SizedBox(width: 10),
                     Text(_goalCount == 1 ? 'Tally' : 'Tallies',
-                        style: Theme.of(context).textTheme.headline2),
+                        style: Theme.of(context).textTheme.headline3),
                   ],
                 ),
                 SizedBox(height: 20),
@@ -224,7 +224,7 @@ class PlusNButton extends StatelessWidget {
         ),
       ),
       width: 50,
-      padding: EdgeInsets.only(top: 3, right: 10, bottom: 3, left: 5),
+      padding: EdgeInsets.only(top: 5, right: 5, bottom: 5, left: 5),
       child: Text(
         isPositive ? '+$intString' : intString,
         textAlign: TextAlign.center,
@@ -260,7 +260,7 @@ class IncrementButtons extends StatelessWidget {
                 width: 1),
           ),
         ),
-        padding: EdgeInsets.only(top: 5, right: 20, bottom: 5, left: 20),
+        padding: EdgeInsets.only(top: 5, right: 15, bottom: 5, left: 15),
         child: Text(
           increment,
           style: Theme.of(context).textTheme.headline3,
