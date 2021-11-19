@@ -13,6 +13,9 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var parentListItems = Provider.of<TaskManager>(context).parentItemList;
+    var childListItems = Provider.of<TaskManager>(context).childItemList;
+
     void updateParentItemPositions(
         int oldPositionInList, int newPositionInList) {
       Provider.of<TaskManager>(context, listen: false)
@@ -22,14 +25,12 @@ class HomeScreen extends StatelessWidget {
     List<TallyTask> getChildListItems(List<String> childNames) {
       List<TallyTask> childTasks = [];
       childNames.forEach((name) {
-        var childItem = Provider.of<TaskManager>(context, listen: false)
-            .getChildItemByName(name);
+        var childItem = childListItems.firstWhere((item) => item.name == name);
         childTasks.add(childItem);
       });
       return childTasks;
     }
 
-    var parentListItems = Provider.of<TaskManager>(context).parentItemList;
     return parentListItems.length > 0
         ? ReorderableListSizesDiffer(
             // ? will proxyDecorator allow a shake effect
@@ -42,9 +43,12 @@ class HomeScreen extends StatelessWidget {
                   key: ValueKey('$i'),
                   listItem: parentListItems[i],
                   childListItems: parentListItems[i].isCollection
-                      ? getChildListItems(
-                          (parentListItems[i] as TallyCollection)
-                              .tallyTaskNames)
+                      ? childListItems
+                          .where((task) =>
+                              (parentListItems[i] as TallyCollection)
+                                  .tallyTaskNames
+                                  .contains(task.name))
+                          .toList()
                       : null,
                 ),
             ],

@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:tally_app/Home/models/tally_collection.dart';
 import 'package:tally_app/Home/models/tally_item.dart';
 import 'package:tally_app/Home/models/tally_task.dart';
+import 'package:tally_app/custom_widgets/new_reorderable_list.dart';
 import 'package:tally_app/providers/task_manager.dart';
 import 'package:tally_app/theme/app_theme.dart';
 
@@ -16,6 +17,12 @@ class TaskPanel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var isExpanded = listItem.isExpanded;
+
+    void updateChildItemPositions(
+        int oldPositionInList, int newPositionInList) {
+      Provider.of<TaskManager>(context, listen: false)
+          .updateItemPositions(oldPositionInList, newPositionInList, false);
+    }
 
     return GestureDetector(
       child: Card(
@@ -101,22 +108,19 @@ class TaskPanel extends StatelessWidget {
                   height: 10,
                 ),
               if (isExpanded && childListItems != null)
-                ListView.separated(
+                ReorderableListSizesDiffer(
                   shrinkWrap: true,
-                  itemBuilder: (context, index) {
-                    return Container(
-                      child: TaskPanel(
-                          listItem: childListItems![index],
-                          // passing null right now since not allowing 3 level
-                          // nesting
-                          childListItems: null),
-                    );
-                    // child: Center(child: Text('Entry $index')));
-                  },
-                  separatorBuilder: (context, index) => Divider(),
-                  itemCount:
-                      (listItem as TallyCollection).tallyTaskNames.length,
-                )
+                  physics: BouncingScrollPhysics(),
+                  children: [
+                    for (var i = 0; i < childListItems!.length; i++)
+                      TaskPanel(
+                        key: ValueKey('$i'),
+                        listItem: childListItems![i],
+                        childListItems: null,
+                      )
+                  ],
+                  onReorder: updateChildItemPositions,
+                ),
             ],
           ),
         ),

@@ -149,7 +149,6 @@ class TaskManager with ChangeNotifier {
         // TODO: remove when positionInList is set on task creation
         item.positionInList = j;
         j++;
-        print('initial position: ${item.positionInList}');
         _parentItemList.add(item);
       }
     }
@@ -171,10 +170,7 @@ class TaskManager with ChangeNotifier {
   void updateItemPositions(
       int oldPositionInList, int newPositionInList, bool isParentList) {
     final operableList = isParentList ? _parentItemList : _childItemList;
-
     final item = operableList.removeAt(oldPositionInList);
-    print('old position index $oldPositionInList');
-    print('new position index $newPositionInList');
 
     if (newPositionInList < oldPositionInList) {
       item.positionInList = newPositionInList;
@@ -228,10 +224,6 @@ class TaskManager with ChangeNotifier {
 
   TallyItem getParentItemByIndex(int itemIndex) {
     return _parentItemList[itemIndex];
-  }
-
-  TallyTask getChildItemByName(String itemName) {
-    return _childItemList.firstWhere((item) => item.name == itemName);
   }
 
   void updateTopLevelList(String name, bool isCollection, TallyItem item,
