@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import 'package:tally_app/Home/models/tally_collection.dart';
-import 'package:tally_app/Home/models/tally_item.dart';
-import 'package:tally_app/Home/models/tally_task.dart';
-import 'package:tally_app/custom_widgets/new_reorderable_list.dart';
+
+import '../../models/tally_item.dart';
+import '../../models/tally_task.dart';
+import 'package:tally_app/widgets/new_reorderable_list.dart';
 import 'package:tally_app/providers/task_manager.dart';
 import 'package:tally_app/theme/app_theme.dart';
 
@@ -27,86 +27,119 @@ class TaskPanel extends StatelessWidget {
     return GestureDetector(
       child: Card(
         child: Container(
-          padding: const EdgeInsets.all(8),
           child: Column(
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Expanded(
-                    child: Text(
-                      listItem.name,
-                      style: Theme.of(context).textTheme.headline3,
-                    ),
-                  ),
-                  Expanded(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        Stack(
-                          alignment: Alignment.center,
-                          children: [
-                            Container(
-                              width: 30,
-                              height: 25,
-                              decoration: BoxDecoration(
-                                color: AppTheme.secondaryColor,
-                                shape: BoxShape.circle,
-                              ),
-                            ),
-                            Text(
-                              '${NumberFormat("##,###", "en_US").format(listItem.streak)}',
+              Card(
+                shadowColor: isExpanded ? AppTheme.secondaryColor : null,
+                elevation: 2,
+                margin: EdgeInsets.all(0),
+                child: Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Expanded(
+                            child: Text(
+                              listItem.name,
                               style: Theme.of(context).textTheme.headline3,
                             ),
-                          ],
-                        ),
-                        SizedBox(width: 2),
-                        Stack(
-                          alignment: Alignment.center,
-                          children: [
-                            Container(
-                              width: 30,
-                              height: 25,
-                              decoration: BoxDecoration(
-                                color: AppTheme.mainColor,
-                                shape: BoxShape.circle,
-                              ),
+                          ),
+                          Expanded(
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                Stack(
+                                  alignment: Alignment.center,
+                                  children: [
+                                    Container(
+                                      width: 30,
+                                      height: 25,
+                                      decoration: BoxDecoration(
+                                        color: AppTheme.secondaryColor,
+                                        shape: BoxShape.circle,
+                                      ),
+                                    ),
+                                    Text(
+                                      '${NumberFormat("##,###", "en_US").format(listItem.streak)}',
+                                      style:
+                                          Theme.of(context).textTheme.headline3,
+                                    ),
+                                  ],
+                                ),
+                                SizedBox(width: 2),
+                                Stack(
+                                  alignment: Alignment.center,
+                                  children: [
+                                    Container(
+                                      width: 30,
+                                      height: 25,
+                                      decoration: BoxDecoration(
+                                        color: AppTheme.mainColor,
+                                        shape: BoxShape.circle,
+                                      ),
+                                    ),
+                                    Text(
+                                        '${NumberFormat("##,###", "en_US").format(listItem.count)}',
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .headline3),
+                                  ],
+                                ),
+                                SizedBox(width: 2),
+                                Stack(
+                                  alignment: Alignment.center,
+                                  children: [
+                                    Container(
+                                      width: 30,
+                                      height: 25,
+                                      decoration: BoxDecoration(
+                                        color: AppTheme.disabledColor,
+                                        shape: BoxShape.circle,
+                                      ),
+                                    ),
+                                    Text(
+                                        '${NumberFormat("##,###", "en_US").format(listItem.count)}',
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .headline3),
+                                  ],
+                                ),
+                              ],
                             ),
-                            Text(
-                                '${NumberFormat("##,###", "en_US").format(listItem.count)}',
-                                style: Theme.of(context).textTheme.headline3),
-                          ],
-                        ),
-                        SizedBox(width: 2),
-                        Stack(
-                          alignment: Alignment.center,
-                          children: [
-                            Container(
-                              width: 30,
-                              height: 25,
-                              decoration: BoxDecoration(
-                                color: AppTheme.disabledColor,
-                                shape: BoxShape.circle,
-                              ),
-                            ),
-                            Text(
-                                '${NumberFormat("##,###", "en_US").format(listItem.count)}',
-                                style: Theme.of(context).textTheme.headline3),
-                          ],
-                        ),
-                      ],
+                          ),
+                          SizedBox(width: 25),
+                          isExpanded
+                              ? Icon(Icons.expand_less)
+                              : Icon(Icons.expand_more),
+                        ],
+                      ),
                     ),
-                  ),
-                  SizedBox(width: 25),
-                  isExpanded
-                      ? Icon(Icons.expand_less)
-                      : Icon(Icons.expand_more),
-                ],
-              ),
-              if (isExpanded)
-                SizedBox(
-                  height: 10,
+                    if (isExpanded && !listItem.isCollection)
+                      GestureDetector(
+                        child: Container(
+                          decoration: BoxDecoration(
+                              color: AppTheme.secondaryColor,
+                              borderRadius: BorderRadius.circular(5)),
+                          margin: EdgeInsets.all(10),
+                          width: double.infinity,
+                          height: 100,
+                          child: Stack(
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Text('Scratch Box',
+                                    style:
+                                        Theme.of(context).textTheme.bodyText1),
+                              )
+                            ],
+                          ),
+                        ),
+                      ),
+                  ],
                 ),
+              ),
               if (isExpanded && childListItems != null)
                 ReorderableListSizesDiffer(
                   shrinkWrap: true,

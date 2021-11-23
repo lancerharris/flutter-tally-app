@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:tally_app/Home/widgets/new_task_modal.dart';
+
 import 'package:tally_app/providers/task_manager.dart';
 import 'package:tally_app/widgets/bottom_nav.dart';
 import 'Home/home_screen.dart';
 
-import 'theme/app_theme.dart';
+import './new_task/new_task_modal.dart';
+import './theme/app_theme.dart';
 
 void main() {
   runApp(MyApp());

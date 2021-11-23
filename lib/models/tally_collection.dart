@@ -1,4 +1,4 @@
-import 'package:tally_app/Home/models/tally_item.dart';
+import './tally_item.dart';
 
 class TallyCollection extends TallyItem {
   String name;

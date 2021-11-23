@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
-import 'package:tally_app/Home/models/tally_item.dart';
-import '../Home/models/tally_collection.dart';
-import '../Home/models/tally_task.dart';
+import '../models/tally_item.dart';
+import '../models/tally_collection.dart';
+import '../models/tally_task.dart';
 
 class TaskManager with ChangeNotifier {
   List<TallyItem> _topLevelList = [];

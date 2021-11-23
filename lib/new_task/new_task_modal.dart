@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
-import 'package:tally_app/Home/widgets/add_goal.dart';
-import 'package:tally_app/Home/widgets/complete_task_creation.dart';
-import 'package:tally_app/Home/widgets/name_task.dart';
-import 'package:tally_app/Home/widgets/select_collection.dart';
-import 'package:tally_app/Home/widgets/title_bar.dart';
-import 'package:tally_app/theme/app_theme.dart';
+import './add_goal.dart';
+import './complete_task_creation.dart';
+import './name_task.dart';
+import './select_collection.dart';
+import './title_bar.dart';
+import '../theme/app_theme.dart';
 import '../models/tally_task.dart';
 
 class NewTaskModal extends StatefulWidget {
