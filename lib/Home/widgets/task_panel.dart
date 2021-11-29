@@ -4,9 +4,10 @@ import 'package:provider/provider.dart';
 
 import '../../models/tally_item.dart';
 import '../../models/tally_task.dart';
-import 'package:tally_app/widgets/new_reorderable_list.dart';
-import 'package:tally_app/providers/task_manager.dart';
-import 'package:tally_app/theme/app_theme.dart';
+import '../../widgets/scratch_box/scratch_box.dart';
+import '../../widgets/new_reorderable_list.dart';
+import '../../providers/task_manager.dart';
+import '../../theme/app_theme.dart';
 
 class TaskPanel extends StatelessWidget {
   const TaskPanel({Key? key, required this.listItem, this.childListItems})
@@ -117,26 +118,9 @@ class TaskPanel extends StatelessWidget {
                       ),
                     ),
                     if (isExpanded && !listItem.isCollection)
-                      GestureDetector(
-                        child: Container(
-                          decoration: BoxDecoration(
-                              color: AppTheme.secondaryColor,
-                              borderRadius: BorderRadius.circular(5)),
-                          margin: EdgeInsets.all(10),
-                          width: double.infinity,
-                          height: 100,
-                          child: Stack(
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Text('Scratch Box',
-                                    style:
-                                        Theme.of(context).textTheme.bodyText1),
-                              )
-                            ],
-                          ),
-                        ),
-                      ),
+                      ScratchBox(
+                        backdropHeight: 100,
+                      )
                   ],
                 ),
               ),
