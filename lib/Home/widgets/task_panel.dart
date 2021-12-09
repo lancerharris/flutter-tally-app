@@ -1,9 +1,6 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import 'package:tally_app/widgets/vertical_text.dart';
 
 import '../../models/tally_item.dart';
 import '../../models/tally_task.dart';
