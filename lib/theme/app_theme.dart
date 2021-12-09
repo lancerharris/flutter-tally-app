@@ -8,6 +8,8 @@ class AppTheme {
   // static const secondaryColor = Color.fromRGBO(28, 202, 142, 1);
   static const disabledColor = Color.fromRGBO(100, 100, 100, 0.5);
   static const errorColor = Color.fromRGBO(255, 51, 51, 1);
+  static const secondaryCardColor = Color.fromRGBO(80, 80, 80, 1);
+  static const scratchBoxColor = Color.fromRGBO(100, 100, 100, 1);
 
   // consider yellow to blue for light theme
   // FFFF55 #00AEFF

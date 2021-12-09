@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter_neumorphic/flutter_neumorphic.dart';
+import 'package:tally_app/theme/app_theme.dart';
 import 'package:tally_app/widgets/scratch_box/custom_pan_gesture.dart';
 
 import './drawn_line.dart';
@@ -24,9 +26,9 @@ class _ScratchBoxState extends State<ScratchBox> with TickerProviderStateMixin {
   List<DrawnLine> lines = <DrawnLine>[];
   late DrawnLine? line;
   var selectedColor = Colors.black;
-  var selectedWidth = 5.0;
+  var selectedWidth = 3.0;
 
-  final backdropColor = Colors.blue;
+  final backdropColor = AppTheme.disabledColor;
 
   var scratchCount = 0;
 
@@ -228,17 +230,33 @@ class _ScratchBoxState extends State<ScratchBox> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     // final computedBackdropWidth = MediaQuery.of(context).size.width;
 
-    return Center(
-      child: Container(
-        height: widget.backdropHeight,
-        width: widget.backdropWidth,
+    return Container(
+      height: widget.backdropHeight,
+      width: widget.backdropWidth,
+      decoration: BoxDecoration(
+        color: AppTheme.secondaryCardColor,
+        // don't do top to make it appear to be part of parent card
+        borderRadius: BorderRadius.only(
+          bottomLeft: Radius.circular(4),
+          bottomRight: Radius.circular(4),
+        ),
+      ),
+      child: Neumorphic(
         margin: EdgeInsets.all(opaqueContainerMargin),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(5),
-          color: backdropColor,
+        style: NeumorphicStyle(
+          boxShape: NeumorphicBoxShape.roundRect(BorderRadius.circular(5)),
+          depth: -2,
+          color: AppTheme.scratchBoxColor,
+          intensity: 0.6,
+          shadowDarkColor: Colors.red,
+          shadowDarkColorEmboss: Colors.black,
+          border: NeumorphicBorder(
+            color: AppTheme.secondaryCardColor,
+            width: 5,
+          ),
         ),
         child: Stack(
-          alignment: Alignment.center,
+          alignment: Alignment.topLeft,
           children: [
             // ClipRect ensures that the size doesn't exceed the parent constraints
             ClipRect(
@@ -284,14 +302,61 @@ class _ScratchBoxState extends State<ScratchBox> with TickerProviderStateMixin {
             //backdrop
 
             Positioned(
-              left: 0,
-              top: 0,
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text('Scratch Box',
-                    style: Theme.of(context).textTheme.bodyText1),
-              ),
-            ),
+                top: 8,
+                left: 8,
+                child: IgnorePointer(
+                  child: NeumorphicText(
+                    'ScratchBox',
+                    style: NeumorphicStyle(
+                        lightSource: LightSource.topLeft,
+                        depth: 0.5,
+                        shadowDarkColor: Colors.black),
+                    // using ! to make this textStyle work for now
+                    textStyle: NeumorphicTextStyle(
+                        fontFamilyFallback: Theme.of(context)
+                            .textTheme
+                            .bodyText1!
+                            .fontFamilyFallback,
+                        fontWeight: FontWeight.w900,
+                        decoration:
+                            Theme.of(context).textTheme.bodyText1!.decoration,
+                        fontSize:
+                            Theme.of(context).textTheme.bodyText1!.fontSize,
+                        fontFamily:
+                            Theme.of(context).textTheme.bodyText1!.fontFamily,
+                        debugLabel:
+                            Theme.of(context).textTheme.bodyText1!.debugLabel,
+                        fontFeatures:
+                            Theme.of(context).textTheme.bodyText1!.fontFeatures,
+                        fontStyle:
+                            Theme.of(context).textTheme.bodyText1!.fontStyle,
+                        letterSpacing: Theme.of(context)
+                            .textTheme
+                            .bodyText1!
+                            .letterSpacing,
+                        height: Theme.of(context).textTheme.bodyText1!.height,
+                        locale: Theme.of(context).textTheme.bodyText1!.locale,
+                        textBaseline:
+                            Theme.of(context).textTheme.bodyText1!.textBaseline,
+                        wordSpacing:
+                            Theme.of(context).textTheme.bodyText1!.wordSpacing),
+                  ),
+                )
+                // child: Text(
+                //   'Scratch Box',
+                //   style: Theme.of(context).textTheme.bodyText1,
+                // ),
+                ),
+            // Positioned(
+            //   left: 2,
+            //   top: 9,
+            //   child: VerticalizeLetters(
+            //     verticalLetters: ['p', 'a', 'c', 'e'],
+            //     verticalLetterSpacing: [14.0, 11.5, 10.5],
+            //     extraSpace: 2,
+            //     style: Theme.of(context).textTheme.bodyText1,
+            //   ),
+            // ),
           ],
         ),
       ),
