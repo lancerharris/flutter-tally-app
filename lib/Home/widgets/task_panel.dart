@@ -123,6 +123,7 @@ class TaskPanel extends StatelessWidget {
             ),
             if (isExpanded && !listItem.isCollection)
               ScratchBox(
+                itemId: listItem.id,
                 backdropHeight: 100,
               ),
             if (isExpanded && childListItems != null) SizedBox(height: 5),

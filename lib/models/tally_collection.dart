@@ -2,7 +2,7 @@ import './tally_item.dart';
 
 class TallyCollection extends TallyItem {
   String name;
-  late String id;
+  String id;
   int streak;
   int count;
   bool isExpanded;
@@ -12,6 +12,7 @@ class TallyCollection extends TallyItem {
   bool isCollection = true;
 
   TallyCollection({
+    required this.id,
     required this.name,
     this.streak = 0,
     this.count = 0,

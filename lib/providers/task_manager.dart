@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:tally_app/models/collection_identifier.dart';
 import '../models/tally_item.dart';
 import '../models/tally_collection.dart';
 import '../models/tally_task.dart';
@@ -10,6 +11,7 @@ class TaskManager with ChangeNotifier {
 
   Map<String, dynamic> tallyTasks = {
     "tallyTask1": {
+      "id": "tt1",
       "name": "Eat Breakfast",
       "isExpanded": false,
       "streak": 4,
@@ -17,6 +19,7 @@ class TaskManager with ChangeNotifier {
       "count": 15,
     },
     "tallyTask2": {
+      "id": "tt2",
       "name": "task_2",
       "isExpanded": false,
       "streak": 3,
@@ -24,6 +27,7 @@ class TaskManager with ChangeNotifier {
       "count": 4,
     },
     "tallyTask3": {
+      "id": "tt3",
       "name": "task_3",
       "isExpanded": false,
       "streak": 7,
@@ -34,6 +38,7 @@ class TaskManager with ChangeNotifier {
 
   Map<String, dynamic> tallyCollections = {
     "tallyCollection1": {
+      "id": 'fc1',
       "name": "first collection",
       "count": 10,
       "isExpanded": false,
@@ -41,6 +46,7 @@ class TaskManager with ChangeNotifier {
       "streak": 10,
     },
     "tallyCollection2": {
+      "id": 'sc1',
       "name": "second collection",
       "count": 10,
       "isExpanded": false,
@@ -48,6 +54,7 @@ class TaskManager with ChangeNotifier {
       "streak": 10,
     },
     "tallyCollection3": {
+      "id": 'tc1',
       "name": "third",
       "count": 10,
       "isExpanded": false,
@@ -55,6 +62,7 @@ class TaskManager with ChangeNotifier {
       "streak": 10,
     },
     "tallyCollection4": {
+      "id": 'fc2',
       "name": "fourth",
       "count": 10,
       "isExpanded": false,
@@ -62,6 +70,7 @@ class TaskManager with ChangeNotifier {
       "streak": 10,
     },
     "tallyCollection5": {
+      "id": 'fc3',
       "name": "fifth",
       "count": 10,
       "isExpanded": false,
@@ -74,6 +83,7 @@ class TaskManager with ChangeNotifier {
     tallyTasks.forEach(
       (key, value) {
         var currentTask = TallyTask(
+          id: value["id"],
           name: value["name"],
           count: value["count"],
           isExpanded: value["isExpanded"],
@@ -87,6 +97,7 @@ class TaskManager with ChangeNotifier {
     tallyCollections.forEach(
       (key, value) {
         var currentCollection = TallyCollection(
+          id: value["id"],
           name: value["name"],
           count: value["count"],
           isExpanded: value["isExpanded"],
@@ -98,21 +109,52 @@ class TaskManager with ChangeNotifier {
     );
 
     // some initialization of mock data. could have hard coded the result
-    updateTaskCollectionMemberships("task_2", "first collection");
-    updateTaskCollectionMemberships("task_3", "first collection");
-    updateColletionTaskMembers("task_2", "first collection");
-    updateColletionTaskMembers("task_3", "first collection");
+    updateTaskCollectionMemberships(
+      "task_2",
+      CollectionIdentifier(id: "fc1", name: "first collection"),
+    );
+    updateTaskCollectionMemberships(
+      "task_3",
+      CollectionIdentifier(id: "fc1", name: "first collection"),
+    );
+    updateColletionTaskMembers(
+      "task_2",
+      CollectionIdentifier(id: "fc1", name: "first collection"),
+    );
+    updateColletionTaskMembers(
+      "task_3",
+      CollectionIdentifier(id: "fc1", name: "first collection"),
+    );
 
     createParentItemList();
     createChildItemList();
   }
 
-  void updateExpansion(String id, bool isCollection) {
-    // choosing not to update initial data
-    var itemToUpdate = _topLevelList.firstWhere(
+  TallyItem fetchItemToUpdate(String id, bool isCollection) {
+    // choosing not to update initial mock data
+    return _topLevelList.firstWhere(
         (item) => item.id == id && item.isCollection == isCollection);
+  }
 
-    itemToUpdate.isExpanded = !itemToUpdate.isExpanded;
+  void updateExpansion(String id, bool isCollection) {
+    var tallyItem = fetchItemToUpdate(id, isCollection);
+
+    tallyItem.isExpanded = !tallyItem.isExpanded;
+    notifyListeners();
+  }
+
+  void updateCount(String id, bool isCollection) {
+    var tallyItem = fetchItemToUpdate(id, isCollection) as TallyTask;
+    tallyItem.count += 1;
+
+    if (!isCollection) {
+      var collections = tallyItem.collectionMemberships;
+      collections.forEach((collection) {
+        var collectionToUpdate = fetchItemToUpdate(collection.id, true);
+        collectionToUpdate.count += 1;
+        print(collectionToUpdate);
+      });
+    }
     notifyListeners();
   }
 
@@ -222,6 +264,18 @@ class TaskManager with ChangeNotifier {
     return collectionNames;
   }
 
+  List<CollectionIdentifier> get CollectionIdentifiers {
+    List<CollectionIdentifier> collectionIdentifiers = [];
+    _topLevelList.forEach((element) {
+      if (element.isCollection) {
+        collectionIdentifiers.add(
+          CollectionIdentifier(id: element.id, name: element.name),
+        );
+      }
+    });
+    return collectionIdentifiers;
+  }
+
   TallyItem getParentItemByIndex(int itemIndex) {
     return _parentItemList[itemIndex];
   }
@@ -243,22 +297,32 @@ class TaskManager with ChangeNotifier {
       _childItemList.add(task);
 
       // add the new collection
-      String? newCollectionName;
+      // I think that I may be already performing this check in the selection of
+      // the collection in the new task creation
+      CollectionIdentifier? newCollectionIdentifier;
       for (var i = 0; i < task.collectionMemberships.length; i++) {
-        if (!collectionNames.contains(task.collectionMemberships[i])) {
-          newCollectionName = task.collectionMemberships[i];
+        if (!collectionNames.contains(task.collectionMemberships[i].name)) {
+          newCollectionIdentifier = CollectionIdentifier(
+            id: task.collectionMemberships[i].id,
+            name: task.collectionMemberships[i].name,
+          );
           // There will only be one new collection per task creation by design.
           break;
         }
       }
 
-      if (newCollectionName != null) {
-        addCollection(TallyCollection(name: newCollectionName));
+      if (newCollectionIdentifier != null) {
+        addCollection(
+          TallyCollection(
+            id: newCollectionIdentifier.id,
+            name: newCollectionIdentifier.name,
+          ),
+        );
       }
 
       // add as child to all collection memberships
-      task.collectionMemberships.forEach((collectionName) {
-        updateColletionTaskMembers(task.name, collectionName);
+      task.collectionMemberships.forEach((collectionMember) {
+        updateColletionTaskMembers(task.name, collectionMember);
       });
     } else {
       _parentItemList.add(task);
@@ -277,17 +341,22 @@ class TaskManager with ChangeNotifier {
     // TODO (LH): Save to back end
   }
 
-  void updateColletionTaskMembers(String taskName, String collectionName) {
-    var collectionToUpdate = _topLevelList
-        .firstWhere((item) => item.name == collectionName && item.isCollection);
+  void updateColletionTaskMembers(
+      String taskName, CollectionIdentifier parentCollection) {
+    var collectionToUpdate = fetchItemToUpdate(parentCollection.id, true);
+    // var collectionToUpdate = _topLevelList
+    //     .firstWhere((item) => item.name == collectionName && item.isCollection);
     (collectionToUpdate as TallyCollection).addTallyTaskName(taskName);
     notifyListeners();
   }
 
-  void updateTaskCollectionMemberships(String taskName, String collectionName) {
+  void updateTaskCollectionMemberships(
+    String taskName,
+    CollectionIdentifier parentCollection,
+  ) {
     var itemToUpdate = _topLevelList
         .firstWhere((item) => item.name == taskName && !item.isCollection);
-    (itemToUpdate as TallyTask).addToCollectionMemberships(collectionName);
+    (itemToUpdate as TallyTask).addToCollectionMemberships(parentCollection);
     notifyListeners();
   }
 }

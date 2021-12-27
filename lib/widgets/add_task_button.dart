@@ -13,8 +13,9 @@ class AddTaskButton extends StatelessWidget {
       child: IconButton(
         iconSize: 30,
         onPressed: () async {
-          var collectionNames =
-              Provider.of<TaskManager>(context, listen: false).collectionNames;
+          var collectionIdentifiers =
+              Provider.of<TaskManager>(context, listen: false)
+                  .CollectionIdentifiers;
           var taskNames =
               Provider.of<TaskManager>(context, listen: false).taskNames;
           var newTask = await showModalBottomSheet(
@@ -29,7 +30,7 @@ class AddTaskButton extends StatelessWidget {
                 maxWidth: 750,
               ),
               builder: (context) => NewTaskModal(
-                  collectionNames: collectionNames, taskNames: taskNames));
+                  collections: collectionIdentifiers, taskNames: taskNames));
 
           if (newTask != null) {
             Provider.of<TaskManager>(context, listen: false).addTask(newTask);

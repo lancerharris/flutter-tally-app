@@ -4,6 +4,8 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_neumorphic/flutter_neumorphic.dart';
+import 'package:provider/provider.dart';
+import 'package:tally_app/providers/task_manager.dart';
 import 'package:tally_app/theme/app_theme.dart';
 import 'package:tally_app/widgets/scratch_box/custom_pan_gesture.dart';
 
@@ -11,11 +13,13 @@ import './drawn_line.dart';
 import './sketcher.dart';
 
 class ScratchBox extends StatefulWidget {
-  const ScratchBox(
-      {Key? key,
-      this.backdropHeight = 100,
-      this.backdropWidth = double.infinity})
-      : super(key: key);
+  const ScratchBox({
+    Key? key,
+    required this.itemId,
+    this.backdropHeight = 100,
+    this.backdropWidth = double.infinity,
+  }) : super(key: key);
+  final String itemId;
   final double backdropHeight;
   final double backdropWidth;
   @override
@@ -30,7 +34,7 @@ class _ScratchBoxState extends State<ScratchBox> with TickerProviderStateMixin {
 
   final backdropColor = AppTheme.disabledColor;
 
-  var scratchCount = 0;
+  // var scratchCount = 0;
 
   final opaqueContainerMargin = 10.0;
 
@@ -107,7 +111,9 @@ class _ScratchBoxState extends State<ScratchBox> with TickerProviderStateMixin {
       currentLineStreamController.add(lines[lines.length - 1]);
     }
 
-    scratchCount++;
+    // scratchCount++;
+    Provider.of<TaskManager>(context, listen: false)
+        .updateCount(widget.itemId, false);
   }
 
   void onPanUpdate(PointerMoveEvent details) {
@@ -287,10 +293,7 @@ class _ScratchBoxState extends State<ScratchBox> with TickerProviderStateMixin {
                               children: [
                                 if (lines.isNotEmpty)
                                   for (line in lines) buildPath(context, line),
-                                buildCurrentPath(
-                                  context,
-                                  // math to keep drawn lines in parent container
-                                ),
+                                buildCurrentPath(context),
                               ],
                             );
                           }),
@@ -341,22 +344,7 @@ class _ScratchBoxState extends State<ScratchBox> with TickerProviderStateMixin {
                         wordSpacing:
                             Theme.of(context).textTheme.bodyText1!.wordSpacing),
                   ),
-                )
-                // child: Text(
-                //   'Scratch Box',
-                //   style: Theme.of(context).textTheme.bodyText1,
-                // ),
-                ),
-            // Positioned(
-            //   left: 2,
-            //   top: 9,
-            //   child: VerticalizeLetters(
-            //     verticalLetters: ['p', 'a', 'c', 'e'],
-            //     verticalLetterSpacing: [14.0, 11.5, 10.5],
-            //     extraSpace: 2,
-            //     style: Theme.of(context).textTheme.bodyText1,
-            //   ),
-            // ),
+                )),
           ],
         ),
       ),

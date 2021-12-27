@@ -1,8 +1,10 @@
+import 'package:tally_app/models/collection_identifier.dart';
+
 import './tally_item.dart';
 
 class TallyTask extends TallyItem {
   String name;
-  late String id;
+  String id;
   int streak;
   int count;
   bool isExpanded;
@@ -11,10 +13,11 @@ class TallyTask extends TallyItem {
   late DateTime dateCreated;
   int? goalCount;
   String? goalIncrement;
-  List<String> collectionMemberships = [];
+  List<CollectionIdentifier> collectionMemberships = [];
   bool inCollection = false;
 
   TallyTask({
+    required this.id,
     required this.name,
     this.streak = 0,
     this.count = 0,
@@ -30,13 +33,14 @@ class TallyTask extends TallyItem {
           isFrozen: isFrozen,
         );
 
-  void addToCollectionMemberships(String collectionName) {
-    collectionMemberships.add(collectionName);
+  void addToCollectionMemberships(CollectionIdentifier collectionCandidate) {
+    collectionMemberships.add(collectionCandidate);
     inCollection = true;
   }
 
-  void addAllCollectionMemberships(List<String> collectionMemberships) {
-    this.collectionMemberships = collectionMemberships;
+  void addAllToCollectionMemberships(
+      List<CollectionIdentifier> collectionCandidates) {
+    this.collectionMemberships = collectionCandidates;
     inCollection = true;
   }
 }

@@ -19,6 +19,6 @@ class TallyItem {
         0, // later remove the default, since all new task creation will give a position in list
   }) {
     dateCreated = DateTime.now();
-    id = DateTime.now().toString();
+    // id = DateTime.now().toString();
   }
 }
