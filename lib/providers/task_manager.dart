@@ -143,15 +143,15 @@ class TaskManager with ChangeNotifier {
     notifyListeners();
   }
 
-  void updateCount(String id, bool isCollection) {
+  void updateCount(String id, int intToAdd, bool isCollection) {
     var tallyItem = fetchItemToUpdate(id, isCollection) as TallyTask;
-    tallyItem.count += 1;
+    tallyItem.count += intToAdd;
 
     if (!isCollection) {
       var collections = tallyItem.collectionMemberships;
       collections.forEach((collection) {
         var collectionToUpdate = fetchItemToUpdate(collection.id, true);
-        collectionToUpdate.count += 1;
+        collectionToUpdate.count += intToAdd;
         print(collectionToUpdate);
       });
     }

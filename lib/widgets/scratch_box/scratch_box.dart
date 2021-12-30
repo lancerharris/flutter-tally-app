@@ -113,7 +113,7 @@ class _ScratchBoxState extends State<ScratchBox> with TickerProviderStateMixin {
 
     // scratchCount++;
     Provider.of<TaskManager>(context, listen: false)
-        .updateCount(widget.itemId, false);
+        .updateCount(widget.itemId, 1, false);
   }
 
   void onPanUpdate(PointerMoveEvent details) {
@@ -139,6 +139,66 @@ class _ScratchBoxState extends State<ScratchBox> with TickerProviderStateMixin {
     } else {
       lineStreamController.add(lines[lines.length - 1]);
     }
+  }
+
+  void onPlusPress() async {
+    // if not currently animating, add lines. o/w just add to count
+    if (animationsComplete) {
+      RenderBox scratchBox = context.findRenderObject() as RenderBox;
+      var lineIncrements = 15;
+      var yOffset1 = 12;
+      var yOffset2 = -33;
+      int xOffset1;
+      int xOffset2;
+
+      if (lines.length == 4) {
+        xOffset1 = -lineIncrements * 2 - 10;
+        xOffset2 = lineIncrements * 2 + 10;
+        yOffset1 = yOffset1 - 10;
+        yOffset2 = yOffset2 + 10;
+      } else {
+        xOffset1 = -lineIncrements * 2 + lines.length * lineIncrements;
+        xOffset2 = xOffset1 + lineIncrements;
+      }
+      line = DrawnLine([
+        Offset(scratchBox.size.width / 2 + xOffset1,
+            scratchBox.size.height / 2 + yOffset1),
+        Offset(scratchBox.size.width / 2 + xOffset2,
+            scratchBox.size.height / 2 + yOffset2),
+      ], selectedColor, selectedWidth);
+      if (line == null) {
+        throw Exception(['Line failed to create']);
+      } else {
+        lines.add(line!);
+      }
+
+      lineStreamController.add(lines[lines.length - 1]);
+      if (lines.length == maxScratchMarks) {
+        await clearScratchBox();
+      }
+    }
+    // scratchCount++;
+    Provider.of<TaskManager>(context, listen: false)
+        .updateCount(widget.itemId, 1, false);
+  }
+
+  void onMinusPress() async {
+    // only add or remove line if not animating, o/w just decrement count
+    if (animationsComplete && lines.length > 0) {
+      if (lines.length > 1) {
+        lines.removeLast();
+        // nothing is really being added, just notifying to redraw lines.
+        lineStreamController.add(lines[lines.length - 1]);
+      } else {
+        lines = <DrawnLine>[];
+
+        line = null;
+        lineStreamController.add(line);
+      }
+    }
+
+    Provider.of<TaskManager>(context, listen: false)
+        .updateCount(widget.itemId, -1, false);
   }
 
   Future<void> clearScratchBox() async {
@@ -247,64 +307,66 @@ class _ScratchBoxState extends State<ScratchBox> with TickerProviderStateMixin {
           bottomRight: Radius.circular(4),
         ),
       ),
-      child: Neumorphic(
-        margin: EdgeInsets.all(opaqueContainerMargin),
-        style: NeumorphicStyle(
-          boxShape: NeumorphicBoxShape.roundRect(BorderRadius.circular(5)),
-          depth: -2,
-          color: AppTheme.scratchBoxColor,
-          intensity: 0.6,
-          shadowDarkColor: Colors.red,
-          shadowDarkColorEmboss: Colors.black,
-          border: NeumorphicBorder(
-            color: AppTheme.secondaryCardColor,
-            width: 5,
+      child: Stack(alignment: Alignment.center, children: [
+        Neumorphic(
+          margin: EdgeInsets.all(opaqueContainerMargin),
+          style: NeumorphicStyle(
+            boxShape: NeumorphicBoxShape.roundRect(BorderRadius.circular(5)),
+            depth: -2,
+            color: AppTheme.scratchBoxColor,
+            intensity: 0.6,
+            shadowDarkColor: Colors.red,
+            shadowDarkColorEmboss: Colors.black,
+            border: NeumorphicBorder(
+              color: AppTheme.secondaryCardColor,
+              width: 5,
+            ),
           ),
-        ),
-        child: Stack(
-          alignment: Alignment.topLeft,
-          children: [
-            // ClipRect ensures that the size doesn't exceed the parent constraints
-            ClipRect(
-              child: AnimatedBuilder(
-                animation: opacityAnimController,
-                builder: (context, child) {
-                  return Opacity(
-                    opacity: opacityAnimation.value,
-                    child: child,
-                  );
-                },
+          child: Stack(
+            alignment: Alignment.topLeft,
+            children: [
+              // ClipRect ensures that the size doesn't exceed the parent constraints
+              ClipRect(
                 child: AnimatedBuilder(
-                  animation: scaleAnimation,
+                  animation: opacityAnimController,
                   builder: (context, child) {
-                    return Transform.scale(
-                      scale: scaleAnimation.value,
+                    return Opacity(
+                      opacity: opacityAnimation.value,
                       child: child,
                     );
                   },
-                  child: Stack(
-                    alignment: Alignment.center,
-                    children: [
-                      StreamBuilder<DrawnLine?>(
-                          stream: lineStreamController.stream,
-                          builder: (context, snapshot) {
-                            return Stack(
-                              alignment: Alignment.center,
-                              children: [
-                                if (lines.isNotEmpty)
-                                  for (line in lines) buildPath(context, line),
-                                buildCurrentPath(context),
-                              ],
-                            );
-                          }),
-                    ],
+                  child: AnimatedBuilder(
+                    animation: scaleAnimation,
+                    builder: (context, child) {
+                      return Transform.scale(
+                        scale: scaleAnimation.value,
+                        child: child,
+                      );
+                    },
+                    child: Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        StreamBuilder<DrawnLine?>(
+                            stream: lineStreamController.stream,
+                            builder: (context, snapshot) {
+                              return Stack(
+                                alignment: Alignment.center,
+                                children: [
+                                  if (lines.isNotEmpty)
+                                    for (line in lines)
+                                      buildPath(context, line),
+                                  buildCurrentPath(context),
+                                ],
+                              );
+                            }),
+                      ],
+                    ),
                   ),
                 ),
               ),
-            ),
-            //backdrop
+              //backdrop
 
-            Positioned(
+              Positioned(
                 top: 8,
                 left: 8,
                 child: IgnorePointer(
@@ -344,10 +406,45 @@ class _ScratchBoxState extends State<ScratchBox> with TickerProviderStateMixin {
                         wordSpacing:
                             Theme.of(context).textTheme.bodyText1!.wordSpacing),
                   ),
-                )),
-          ],
+                ),
+              ),
+              Positioned(
+                bottom: 0,
+                right: 0,
+                child: GestureDetector(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: AppTheme.secondaryColor,
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(15),
+                      ),
+                    ),
+                    padding: EdgeInsets.all(4),
+                    child: Icon(Icons.remove),
+                  ),
+                  onTap: onMinusPress,
+                ),
+              ),
+              Positioned(
+                right: 0,
+                child: GestureDetector(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: AppTheme.secondaryColor,
+                      borderRadius: BorderRadius.only(
+                        bottomLeft: Radius.circular(15),
+                      ),
+                    ),
+                    padding: EdgeInsets.all(4),
+                    child: Icon(Icons.add),
+                  ),
+                  onTap: onPlusPress,
+                ),
+              ),
+            ],
+          ),
         ),
-      ),
+      ]),
     );
   }
 
