@@ -1,7 +1,5 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
-import 'package:tally_app/models/collection_identifier.dart';
+
 import 'package:tally_app/theme/app_theme.dart';
 
 class SelectCollection extends StatefulWidget {
@@ -13,9 +11,9 @@ class SelectCollection extends StatefulWidget {
     required this.removeFromCollectionMemberships,
     required this.collectionMemberships,
   }) : super(key: key);
-  final List<CollectionIdentifier>? collections;
-  final List<CollectionIdentifier> collectionMemberships;
-  final Function(CollectionIdentifier) addToCollectionMemberships;
+  final List<String>? collections;
+  final List<String> collectionMemberships;
+  final Function(String) addToCollectionMemberships;
   final Function(String, String) setInputError;
   final Function(String) removeFromCollectionMemberships;
 
@@ -60,7 +58,7 @@ class _SelectCollectionState extends State<SelectCollection> {
   bool checkCollectionExistence(String possibleName) {
     if (widget.collections != null) {
       for (var i = 0; i < widget.collections!.length; i++) {
-        if (widget.collections![i].name == possibleName) {
+        if (widget.collections![i] == possibleName) {
           return true;
         }
       }
@@ -70,7 +68,7 @@ class _SelectCollectionState extends State<SelectCollection> {
 
   bool checkCollectionMembershipExistence(String possibleName) {
     for (var i = 0; i < widget.collectionMemberships.length; i++) {
-      if (widget.collectionMemberships[i].name == possibleName) {
+      if (widget.collectionMemberships[i] == possibleName) {
         return true;
       }
     }
@@ -190,15 +188,14 @@ class _SelectCollectionState extends State<SelectCollection> {
                     spacing: 5,
                     runSpacing: 5,
                     children: widget.collections!
-                        .map((collectionIdentifier) {
+                        .map((collectionName) {
                           return GestureDetector(
                             child: ClipRRect(
                               borderRadius: BorderRadius.circular(25),
                               child: Container(
                                 padding: EdgeInsets.only(
                                     top: 5, right: 10, bottom: 5, left: 10),
-                                color: _selectedCollectionName ==
-                                        collectionIdentifier.name
+                                color: _selectedCollectionName == collectionName
                                     ? Color.lerp(AppTheme.mainColor,
                                         AppTheme.secondaryColor, 0.05)
                                     : AppTheme.disabledColor,
@@ -206,13 +203,13 @@ class _SelectCollectionState extends State<SelectCollection> {
                                   crossAxisAlignment: WrapCrossAlignment.center,
                                   children: [
                                     Text(
-                                      '${collectionIdentifier.name}',
+                                      '${collectionName}',
                                       style:
                                           Theme.of(context).textTheme.headline3,
                                     ),
                                     SizedBox(width: 10),
                                     if (_selectedCollectionName ==
-                                        collectionIdentifier.name)
+                                        collectionName)
                                       Icon(
                                         Icons.close_rounded,
                                         size: 16,
@@ -228,22 +225,20 @@ class _SelectCollectionState extends State<SelectCollection> {
                             ),
                             onTap: () {
                               setState(() {
-                                if (_selectedCollectionName !=
-                                    collectionIdentifier.name) {
+                                if (_selectedCollectionName != collectionName) {
                                   // remove whatever was the selected collection
                                   // from the collection memeberships
                                   if (_selectedCollectionName != null) {
                                     widget.removeFromCollectionMemberships(
                                         _selectedCollectionName!);
                                   }
-                                  _selectedCollectionName =
-                                      collectionIdentifier.name;
+                                  _selectedCollectionName = collectionName;
                                   widget.addToCollectionMemberships(
-                                      collectionIdentifier);
+                                      collectionName);
                                 } else {
                                   _selectedCollectionName = null;
                                   widget.removeFromCollectionMemberships(
-                                      collectionIdentifier.id);
+                                      collectionName);
                                 }
                               });
                             },
@@ -296,8 +291,7 @@ class _SelectCollectionState extends State<SelectCollection> {
                       if (_newCollectionName != null &&
                           _newCollectionName != inputString) {
                         widget.collectionMemberships.removeWhere(
-                            (collectionIdentifier) =>
-                                collectionIdentifier.name == inputString);
+                            (collectionName) => collectionName == inputString);
                       }
                       var isAlreadyMember =
                           checkCollectionMembershipExistence(inputString);
@@ -305,14 +299,7 @@ class _SelectCollectionState extends State<SelectCollection> {
                           checkCollectionExistence(inputString);
                       if (!isAlreadyMember && !isAlreadyCollection ||
                           widget.collections == null) {
-                        // TODO (LH): replace with real ID makin logic
-                        var mockId = Random().toString();
-                        widget.addToCollectionMemberships(
-                          CollectionIdentifier(
-                            id: mockId,
-                            name: inputString,
-                          ),
-                        );
+                        widget.addToCollectionMemberships(inputString);
                         _newCollectionName = inputString;
                       }
                     },

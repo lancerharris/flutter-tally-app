@@ -1,8 +1,4 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
-import 'package:tally_app/models/collection_identifier.dart';
 
 import './add_goal.dart';
 import './complete_task_creation.dart';
@@ -15,7 +11,7 @@ import '../models/tally_task.dart';
 class NewTaskModal extends StatefulWidget {
   const NewTaskModal({Key? key, this.collections, this.taskNames})
       : super(key: key);
-  final List<CollectionIdentifier>? collections;
+  final List<String>? collections;
   final List<String>? taskNames;
 
   @override
@@ -24,7 +20,7 @@ class NewTaskModal extends StatefulWidget {
 
 class _NewTaskModalState extends State<NewTaskModal> {
   String? _newTaskName;
-  List<CollectionIdentifier> _collectionMemberships = [];
+  List<String> _collectionMemberships = [];
   int? _goalCount;
   String? _goalIncrement;
 
@@ -47,21 +43,21 @@ class _NewTaskModalState extends State<NewTaskModal> {
     _goalIncrement = goalIncrement;
   }
 
-  void addToCollectionMemberships(CollectionIdentifier parentCollection) {
-    if (parentCollection.name.trim() != '') {
+  void addToCollectionMemberships(String parentCollection) {
+    if (parentCollection.trim() != '') {
       _collectionMemberships.add(parentCollection);
     } else {
       // if the user removes their text, remove from _collectionMemberships
       if (widget.collections != null) {
         _collectionMemberships.removeWhere((parentCollection) =>
-            !widget.collections!.contains(parentCollection.name));
+            !widget.collections!.contains(parentCollection));
       }
     }
   }
 
-  void removeFromCollectionMemberships(String collectionId) {
+  void removeFromCollectionMemberships(String collectionName) {
     _collectionMemberships
-        .removeWhere((parentCollection) => parentCollection.id == collectionId);
+        .removeWhere((collection) => collection == collectionName);
   }
 
   void setInputError(String errorKey, String inputError) {
@@ -81,12 +77,10 @@ class _NewTaskModalState extends State<NewTaskModal> {
   }
 
   void completeTaskCreation() {
-    // TODO (LH): replace mockId with real id creation
-    var mockId = Random().toString();
     if (!errorExists() && _newTaskName != null) {
       var newTallyTask = TallyTask(
-        id: mockId,
         name: _newTaskName!,
+        dateCreated: DateTime.now(),
         goalCount: _goalCount,
         goalIncrement: _goalIncrement,
       );

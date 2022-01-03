@@ -15,11 +15,11 @@ import './sketcher.dart';
 class ScratchBox extends StatefulWidget {
   const ScratchBox({
     Key? key,
-    required this.itemId,
+    required this.itemName,
     this.backdropHeight = 100,
     this.backdropWidth = double.infinity,
   }) : super(key: key);
-  final String itemId;
+  final String itemName;
   final double backdropHeight;
   final double backdropWidth;
   @override
@@ -113,7 +113,7 @@ class _ScratchBoxState extends State<ScratchBox> with TickerProviderStateMixin {
 
     // scratchCount++;
     Provider.of<TaskManager>(context, listen: false)
-        .updateCount(widget.itemId, 1, false);
+        .updateCount(widget.itemName, 1, false);
   }
 
   void onPanUpdate(PointerMoveEvent details) {
@@ -179,7 +179,7 @@ class _ScratchBoxState extends State<ScratchBox> with TickerProviderStateMixin {
     }
     // scratchCount++;
     Provider.of<TaskManager>(context, listen: false)
-        .updateCount(widget.itemId, 1, false);
+        .updateCount(widget.itemName, 1, false);
   }
 
   void onMinusPress() async {
@@ -198,7 +198,7 @@ class _ScratchBoxState extends State<ScratchBox> with TickerProviderStateMixin {
     }
 
     Provider.of<TaskManager>(context, listen: false)
-        .updateCount(widget.itemId, -1, false);
+        .updateCount(widget.itemName, -1, false);
   }
 
   Future<void> clearScratchBox() async {

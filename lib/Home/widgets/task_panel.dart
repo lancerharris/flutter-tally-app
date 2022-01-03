@@ -123,7 +123,7 @@ class TaskPanel extends StatelessWidget {
             ),
             if (isExpanded && !listItem.isCollection)
               ScratchBox(
-                itemId: listItem.id,
+                itemName: listItem.name,
                 backdropHeight: 100,
               ),
             if (isExpanded && childListItems != null) SizedBox(height: 5),
@@ -150,7 +150,7 @@ class TaskPanel extends StatelessWidget {
       ),
       onTap: () {
         Provider.of<TaskManager>(context, listen: false).updateExpansion(
-          listItem.id,
+          listItem.name,
           listItem.isCollection,
         );
       },
