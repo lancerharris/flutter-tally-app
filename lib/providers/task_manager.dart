@@ -1,5 +1,5 @@
 import 'package:flutter/foundation.dart';
-import 'package:tally_app/models/collection_identifier.dart';
+import 'package:hive/hive.dart';
 import '../models/tally_item.dart';
 import '../models/tally_collection.dart';
 import '../models/tally_task.dart';
@@ -79,78 +79,57 @@ class TaskManager with ChangeNotifier {
     },
   };
 
-  TaskManager() {
-    tallyTasks.forEach(
-      (key, value) {
-        var currentTask = TallyTask(
-          id: value["id"],
-          name: value["name"],
-          count: value["count"],
-          isExpanded: value["isExpanded"],
-          isFrozen: value["isFrozen"],
-          streak: value["streak"],
-        );
-        _topLevelList.add(currentTask);
-      },
-    );
+  TaskManager() {}
 
-    tallyCollections.forEach(
-      (key, value) {
-        var currentCollection = TallyCollection(
-          id: value["id"],
-          name: value["name"],
-          count: value["count"],
-          isExpanded: value["isExpanded"],
-          isFrozen: value["isFrozen"],
-          streak: value["streak"],
-        );
-        _topLevelList.add(currentCollection);
-      },
-    );
+  Future<void> getTallyTasks() async {
+    final tallyTasks = await Hive.box('tally_tasks');
+    for (var i = 0; i < tallyTasks.length; i++) {
+      final tallyTask = tallyTasks.getAt(i) as TallyTask;
+      _topLevelList.add(tallyTask);
+    }
+  }
 
-    // some initialization of mock data. could have hard coded the result
-    updateTaskCollectionMemberships(
-      "task_2",
-      CollectionIdentifier(id: "fc1", name: "first collection"),
-    );
-    updateTaskCollectionMemberships(
-      "task_3",
-      CollectionIdentifier(id: "fc1", name: "first collection"),
-    );
-    updateColletionTaskMembers(
-      "task_2",
-      CollectionIdentifier(id: "fc1", name: "first collection"),
-    );
-    updateColletionTaskMembers(
-      "task_3",
-      CollectionIdentifier(id: "fc1", name: "first collection"),
-    );
+  Future<void> getTallyCollections() async {
+    final tallyCollections = await Hive.box('tally_collections');
 
+    for (var i = 0; i < tallyCollections.length; i++) {
+      final tallyCollection = tallyCollections.getAt(i) as TallyCollection;
+      _topLevelList.add(tallyCollection);
+    }
+  }
+
+  Future<void> getHiveData() async {
+    await getTallyTasks();
+    await getTallyCollections();
+  }
+
+  Future<void> getInitialData() async {
+    await getHiveData();
     createParentItemList();
     createChildItemList();
   }
 
-  TallyItem fetchItemToUpdate(String id, bool isCollection) {
+  TallyItem fetchItemToUpdate(String name, bool isCollection) {
     // choosing not to update initial mock data
     return _topLevelList.firstWhere(
-        (item) => item.id == id && item.isCollection == isCollection);
+        (item) => item.name == name && item.isCollection == isCollection);
   }
 
-  void updateExpansion(String id, bool isCollection) {
-    var tallyItem = fetchItemToUpdate(id, isCollection);
+  void updateExpansion(String name, bool isCollection) {
+    var tallyItem = fetchItemToUpdate(name, isCollection);
 
     tallyItem.isExpanded = !tallyItem.isExpanded;
     notifyListeners();
   }
 
-  void updateCount(String id, int intToAdd, bool isCollection) {
-    var tallyItem = fetchItemToUpdate(id, isCollection) as TallyTask;
+  void updateCount(String name, int intToAdd, bool isCollection) {
+    var tallyItem = fetchItemToUpdate(name, isCollection) as TallyTask;
     tallyItem.count += intToAdd;
 
     if (!isCollection) {
       var collections = tallyItem.collectionMemberships;
       collections.forEach((collection) {
-        var collectionToUpdate = fetchItemToUpdate(collection.id, true);
+        var collectionToUpdate = fetchItemToUpdate(name, true);
         collectionToUpdate.count += intToAdd;
         print(collectionToUpdate);
       });
@@ -264,16 +243,16 @@ class TaskManager with ChangeNotifier {
     return collectionNames;
   }
 
-  List<CollectionIdentifier> get CollectionIdentifiers {
-    List<CollectionIdentifier> collectionIdentifiers = [];
+  List<String> get CollectionNames {
+    List<String> collectionNames = [];
     _topLevelList.forEach((element) {
       if (element.isCollection) {
-        collectionIdentifiers.add(
-          CollectionIdentifier(id: element.id, name: element.name),
+        collectionNames.add(
+          element.name,
         );
       }
     });
-    return collectionIdentifiers;
+    return collectionNames;
   }
 
   TallyItem getParentItemByIndex(int itemIndex) {
@@ -292,6 +271,7 @@ class TaskManager with ChangeNotifier {
   }
 
   void addTask(TallyTask task) {
+    Hive.box('tally_tasks').add(task);
     _topLevelList.add(task);
     if (task.inCollection) {
       _childItemList.add(task);
@@ -299,51 +279,53 @@ class TaskManager with ChangeNotifier {
       // add the new collection
       // I think that I may be already performing this check in the selection of
       // the collection in the new task creation
-      CollectionIdentifier? newCollectionIdentifier;
+      String? newCollectionName;
       for (var i = 0; i < task.collectionMemberships.length; i++) {
-        if (!collectionNames.contains(task.collectionMemberships[i].name)) {
-          newCollectionIdentifier = CollectionIdentifier(
-            id: task.collectionMemberships[i].id,
-            name: task.collectionMemberships[i].name,
-          );
+        if (!collectionNames.contains(task.collectionMemberships[i])) {
+          newCollectionName = task.collectionMemberships[i];
           // There will only be one new collection per task creation by design.
           break;
         }
       }
 
-      if (newCollectionIdentifier != null) {
-        addCollection(
-          TallyCollection(
-            id: newCollectionIdentifier.id,
-            name: newCollectionIdentifier.name,
-          ),
-        );
-      }
-
       // add as child to all collection memberships
-      task.collectionMemberships.forEach((collectionMember) {
-        updateColletionTaskMembers(task.name, collectionMember);
+      final olderCollections = task.collectionMemberships.where((collection) {
+        if (newCollectionName == null)
+          return true;
+        else
+          return collection != newCollectionName;
       });
+
+      olderCollections.toList().forEach((collection) {
+        updateColletionMembers(task.name, collection);
+      });
+
+      if (newCollectionName != null) {
+        final newTallyCollection = TallyCollection(
+          name: newCollectionName,
+          dateCreated: task.dateCreated,
+        );
+
+        newTallyCollection.addTallyTaskName(task.name);
+        addCollection(newTallyCollection);
+      }
     } else {
       _parentItemList.add(task);
       // only notify if not in collection. otherwise wait for collection add.
       notifyListeners();
     }
-
-    // TODO (LH): Save to back end
   }
 
   void addCollection(TallyCollection collection) {
+    Hive.box('tally_collections').add(collection);
     _topLevelList.add(collection);
     // add to parent since can't be child by design.
     _parentItemList.add(collection);
     notifyListeners();
-    // TODO (LH): Save to back end
   }
 
-  void updateColletionTaskMembers(
-      String taskName, CollectionIdentifier parentCollection) {
-    var collectionToUpdate = fetchItemToUpdate(parentCollection.id, true);
+  void updateColletionMembers(String taskName, String parentCollection) {
+    var collectionToUpdate = fetchItemToUpdate(taskName, true);
     // var collectionToUpdate = _topLevelList
     //     .firstWhere((item) => item.name == collectionName && item.isCollection);
     (collectionToUpdate as TallyCollection).addTallyTaskName(taskName);
@@ -352,7 +334,7 @@ class TaskManager with ChangeNotifier {
 
   void updateTaskCollectionMemberships(
     String taskName,
-    CollectionIdentifier parentCollection,
+    String parentCollection,
   ) {
     var itemToUpdate = _topLevelList
         .firstWhere((item) => item.name == taskName && !item.isCollection);
