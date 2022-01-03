@@ -17,25 +17,26 @@ class MainScaffold extends StatefulWidget {
 
 class _MainScaffoldState extends State<MainScaffold> {
   @override
+  void initState() {
+    super.initState();
+    Provider.of<TaskManager>(context, listen: false).getInitialData();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (ctx) => TaskManager()),
-      ],
-      child: Scaffold(
-        appBar: AppBar(
-          centerTitle: true,
-          title: Text(
-            widget.title,
-            style: Theme.of(context).textTheme.headline1,
-          ),
-          actions: [
-            AddTaskButton(),
-          ],
+    return Scaffold(
+      appBar: AppBar(
+        centerTitle: true,
+        title: Text(
+          widget.title,
+          style: Theme.of(context).textTheme.headline1,
         ),
-        body: HomeScreen(),
-        bottomNavigationBar: BottomNav(),
+        actions: [
+          AddTaskButton(),
+        ],
       ),
+      body: HomeScreen(),
+      bottomNavigationBar: BottomNav(),
     );
   }
 }
