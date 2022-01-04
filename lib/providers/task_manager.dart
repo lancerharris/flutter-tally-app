@@ -325,7 +325,7 @@ class TaskManager with ChangeNotifier {
   }
 
   void updateColletionMembers(String taskName, String parentCollection) {
-    var collectionToUpdate = fetchItemToUpdate(taskName, true);
+    var collectionToUpdate = fetchItemToUpdate(parentCollection, true);
     // var collectionToUpdate = _topLevelList
     //     .firstWhere((item) => item.name == collectionName && item.isCollection);
     (collectionToUpdate as TallyCollection).addTallyTaskName(taskName);
