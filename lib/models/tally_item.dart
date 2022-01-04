@@ -1,4 +1,6 @@
-class TallyItem {
+import 'package:hive/hive.dart';
+
+class TallyItem extends HiveObject {
   String name;
   final DateTime dateCreated;
   int streak;
