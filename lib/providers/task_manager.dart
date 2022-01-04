@@ -3,61 +3,63 @@ import 'package:hive/hive.dart';
 import '../models/tally_item.dart';
 import '../models/tally_collection.dart';
 import '../models/tally_task.dart';
+import './hive_manager.dart';
+
+enum CollectionStatus { isNotCollection, isCollection }
+enum NotifyFlag { doNotNotify, doNotify }
+enum ParentStatus { inChildList, inParentList }
 
 class TaskManager with ChangeNotifier {
   List<TallyItem> _topLevelList = [];
   List<TallyItem> _parentItemList = [];
   List<TallyTask> _childItemList = [];
+  HiveManager hiveManager = HiveManager();
 
-  Future<void> getTallyTasks() async {
-    final tallyTasks = await Hive.box('tally_tasks');
-    for (var i = 0; i < tallyTasks.length; i++) {
-      final tallyTask = tallyTasks.getAt(i) as TallyTask;
-      _topLevelList.add(tallyTask);
-    }
+  Future<void> readTallyTasks() async {
+    List<TallyTask> tallyTasks = await hiveManager.readTallyTasks();
+    _topLevelList.addAll(tallyTasks);
   }
 
-  Future<void> getTallyCollections() async {
-    final tallyCollections = await Hive.box('tally_collections');
-
-    for (var i = 0; i < tallyCollections.length; i++) {
-      final tallyCollection = tallyCollections.getAt(i) as TallyCollection;
-      _topLevelList.add(tallyCollection);
-    }
+  Future<void> readTallyCollections() async {
+    List<TallyCollection> tallyCollections =
+        await hiveManager.readTallyCollections();
+    _topLevelList.addAll(tallyCollections);
   }
 
-  Future<void> getHiveData() async {
-    await getTallyTasks();
-    await getTallyCollections();
+  Future<void> readHiveData() async {
+    readTallyTasks();
+    readTallyCollections();
   }
 
   Future<void> getInitialData() async {
-    await getHiveData();
+    await readHiveData();
     createParentItemList();
     createChildItemList();
   }
 
-  TallyItem fetchItemToUpdate(String name, bool isCollection) {
-    // choosing not to update initial mock data
+  TallyItem getItemToUpdate(String name, CollectionStatus collectionStatus) {
     return _topLevelList.firstWhere(
-        (item) => item.name == name && item.isCollection == isCollection);
+        (item) => item.name == name && item.isCollection == collectionStatus);
   }
 
-  void updateExpansion(String name, bool isCollection) {
-    var tallyItem = fetchItemToUpdate(name, isCollection);
+  void updateExpansion(String name, CollectionStatus collectionStatus) {
+    var tallyItem = getItemToUpdate(name, collectionStatus);
 
     tallyItem.isExpanded = !tallyItem.isExpanded;
+
     notifyListeners();
   }
 
-  void updateCount(String name, int intToAdd, bool isCollection) {
-    var tallyItem = fetchItemToUpdate(name, isCollection) as TallyTask;
+  void updateCount(
+      String name, int intToAdd, CollectionStatus collectionStatus) {
+    var tallyItem = getItemToUpdate(name, collectionStatus) as TallyTask;
     tallyItem.count += intToAdd;
 
-    if (!isCollection) {
+    if (collectionStatus == CollectionStatus.isCollection) {
       var collections = tallyItem.collectionMemberships;
       collections.forEach((collection) {
-        var collectionToUpdate = fetchItemToUpdate(name, true);
+        var collectionToUpdate =
+            getItemToUpdate(name, CollectionStatus.isCollection);
         collectionToUpdate.count += intToAdd;
         print(collectionToUpdate);
       });
@@ -87,7 +89,7 @@ class TaskManager with ChangeNotifier {
     return taskNames;
   }
 
-  void createParentItemList([bool snubListeners = false]) {
+  void createParentItemList([NotifyFlag shouldNotify = NotifyFlag.doNotify]) {
     // Don't return tasks that are a part of a collection.
     _parentItemList = [];
     var j = 0; // TODO: Remove when positionInList is set on task creation
@@ -107,7 +109,7 @@ class TaskManager with ChangeNotifier {
         : a.positionInList == b.positionInList
             ? 0
             : 1);
-    if (!snubListeners) {
+    if (shouldNotify == NotifyFlag.doNotify) {
       notifyListeners();
     }
   }
@@ -117,8 +119,10 @@ class TaskManager with ChangeNotifier {
   // ? that holds info with task names as keys and positions as values.
   // ? that way there may be less writes to db or whatever
   void updateItemPositions(
-      int oldPositionInList, int newPositionInList, bool isParentList) {
-    final operableList = isParentList ? _parentItemList : _childItemList;
+      int oldPositionInList, int newPositionInList, ParentStatus parentStatus) {
+    final operableList = parentStatus == ParentStatus.inParentList
+        ? _parentItemList
+        : _childItemList;
     final item = operableList.removeAt(oldPositionInList);
 
     if (newPositionInList < oldPositionInList) {
@@ -139,7 +143,7 @@ class TaskManager with ChangeNotifier {
     notifyListeners();
   }
 
-  void createChildItemList([bool snubListeners = false]) {
+  void createChildItemList([NotifyFlag shouldNotify = NotifyFlag.doNotify]) {
     _childItemList = [];
     for (int i = 0; i < _topLevelList.length; i++) {
       var item = _topLevelList[i];
@@ -156,7 +160,7 @@ class TaskManager with ChangeNotifier {
             ? 0
             : 1);
 
-    if (!snubListeners) {
+    if (shouldNotify == NotifyFlag.doNotify) {
       notifyListeners();
     }
   }
@@ -187,13 +191,14 @@ class TaskManager with ChangeNotifier {
     return _parentItemList[itemIndex];
   }
 
-  void updateTopLevelList(String name, bool isCollection, TallyItem item,
-      [bool snubListeners = false]) {
+  void updateTopLevelList(
+      String name, CollectionStatus collectionStatus, TallyItem item,
+      [NotifyFlag shouldNotify = NotifyFlag.doNotNotify]) {
     var replacementIndex = _topLevelList.indexWhere(
-        (item) => item.name == name && item.isCollection == isCollection);
+        (item) => item.name == name && item.isCollection == collectionStatus);
 
     _topLevelList.replaceRange(replacementIndex, replacementIndex + 1, [item]);
-    if (!snubListeners) {
+    if (shouldNotify == NotifyFlag.doNotify) {
       notifyListeners();
     }
   }
@@ -253,7 +258,8 @@ class TaskManager with ChangeNotifier {
   }
 
   void updateColletionMembers(String taskName, String parentCollection) {
-    var collectionToUpdate = fetchItemToUpdate(parentCollection, true);
+    var collectionToUpdate =
+        getItemToUpdate(parentCollection, CollectionStatus.isCollection);
     // var collectionToUpdate = _topLevelList
     //     .firstWhere((item) => item.name == collectionName && item.isCollection);
     (collectionToUpdate as TallyCollection).addTallyTaskName(taskName);

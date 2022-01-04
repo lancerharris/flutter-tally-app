@@ -24,8 +24,8 @@ class TaskPanel extends StatelessWidget {
 
     void updateChildItemPositions(
         int oldPositionInList, int newPositionInList) {
-      Provider.of<TaskManager>(context, listen: false)
-          .updateItemPositions(oldPositionInList, newPositionInList, false);
+      Provider.of<TaskManager>(context, listen: false).updateItemPositions(
+          oldPositionInList, newPositionInList, ParentStatus.inChildList);
     }
 
     return GestureDetector(
@@ -151,7 +151,9 @@ class TaskPanel extends StatelessWidget {
       onTap: () {
         Provider.of<TaskManager>(context, listen: false).updateExpansion(
           listItem.name,
-          listItem.isCollection,
+          listItem.isCollection
+              ? CollectionStatus.isCollection
+              : CollectionStatus.isNotCollection,
         );
       },
     );

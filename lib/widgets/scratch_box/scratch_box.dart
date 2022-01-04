@@ -1,8 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter/gestures.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter_neumorphic/flutter_neumorphic.dart';
 import 'package:provider/provider.dart';
 import 'package:tally_app/providers/task_manager.dart';
@@ -113,7 +111,7 @@ class _ScratchBoxState extends State<ScratchBox> with TickerProviderStateMixin {
 
     // scratchCount++;
     Provider.of<TaskManager>(context, listen: false)
-        .updateCount(widget.itemName, 1, false);
+        .updateCount(widget.itemName, 1, CollectionStatus.isNotCollection);
   }
 
   void onPanUpdate(PointerMoveEvent details) {
@@ -179,7 +177,7 @@ class _ScratchBoxState extends State<ScratchBox> with TickerProviderStateMixin {
     }
     // scratchCount++;
     Provider.of<TaskManager>(context, listen: false)
-        .updateCount(widget.itemName, 1, false);
+        .updateCount(widget.itemName, 1, CollectionStatus.isNotCollection);
   }
 
   void onMinusPress() async {
@@ -198,7 +196,7 @@ class _ScratchBoxState extends State<ScratchBox> with TickerProviderStateMixin {
     }
 
     Provider.of<TaskManager>(context, listen: false)
-        .updateCount(widget.itemName, -1, false);
+        .updateCount(widget.itemName, -1, CollectionStatus.isNotCollection);
   }
 
   Future<void> clearScratchBox() async {

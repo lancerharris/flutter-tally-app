@@ -17,8 +17,8 @@ class HomeScreen extends StatelessWidget {
 
     void updateParentItemPositions(
         int oldPositionInList, int newPositionInList) {
-      Provider.of<TaskManager>(context, listen: false)
-          .updateItemPositions(oldPositionInList, newPositionInList, true);
+      Provider.of<TaskManager>(context, listen: false).updateItemPositions(
+          oldPositionInList, newPositionInList, ParentStatus.inParentList);
     }
 
     List<TallyTask> getChildListItems(List<String> childNames) {
