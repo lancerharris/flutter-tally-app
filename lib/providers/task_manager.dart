@@ -4,8 +4,8 @@ import '../models/tally_item.dart';
 import '../models/tally_collection.dart';
 import '../models/tally_task.dart';
 import './hive_manager.dart';
+import '../models/enum_collection_status.dart';
 
-enum CollectionStatus { isNotCollection, isCollection }
 enum NotifyFlag { doNotNotify, doNotify }
 enum ParentStatus { inChildList, inParentList }
 
@@ -14,58 +14,6 @@ class TaskManager with ChangeNotifier {
   List<TallyItem> _parentItemList = [];
   List<TallyTask> _childItemList = [];
   HiveManager hiveManager = HiveManager();
-
-  Future<void> readTallyTasks() async {
-    List<TallyTask> tallyTasks = await hiveManager.readTallyTasks();
-    _topLevelList.addAll(tallyTasks);
-  }
-
-  Future<void> readTallyCollections() async {
-    List<TallyCollection> tallyCollections =
-        await hiveManager.readTallyCollections();
-    _topLevelList.addAll(tallyCollections);
-  }
-
-  Future<void> readHiveData() async {
-    readTallyTasks();
-    readTallyCollections();
-  }
-
-  Future<void> getInitialData() async {
-    await readHiveData();
-    createParentItemList();
-    createChildItemList();
-  }
-
-  TallyItem getItemToUpdate(String name, CollectionStatus collectionStatus) {
-    return _topLevelList.firstWhere(
-        (item) => item.name == name && item.isCollection == collectionStatus);
-  }
-
-  void updateExpansion(String name, CollectionStatus collectionStatus) {
-    var tallyItem = getItemToUpdate(name, collectionStatus);
-
-    tallyItem.isExpanded = !tallyItem.isExpanded;
-
-    notifyListeners();
-  }
-
-  void updateCount(
-      String name, int intToAdd, CollectionStatus collectionStatus) {
-    var tallyItem = getItemToUpdate(name, collectionStatus) as TallyTask;
-    tallyItem.count += intToAdd;
-
-    if (collectionStatus == CollectionStatus.isCollection) {
-      var collections = tallyItem.collectionMemberships;
-      collections.forEach((collection) {
-        var collectionToUpdate =
-            getItemToUpdate(name, CollectionStatus.isCollection);
-        collectionToUpdate.count += intToAdd;
-        print(collectionToUpdate);
-      });
-    }
-    notifyListeners();
-  }
 
   int get parentListLength {
     return _parentItemList.length;
@@ -87,6 +35,27 @@ class TaskManager with ChangeNotifier {
       }
     });
     return taskNames;
+  }
+
+  List<String> get collectionNames {
+    List<String> collectionNames = [];
+    _topLevelList.forEach((element) {
+      if (element.isCollection) {
+        collectionNames.add(element.name);
+      }
+    });
+    return collectionNames;
+  }
+
+  TallyItem getParentItemByIndex(int itemIndex) {
+    return _parentItemList[itemIndex];
+  }
+
+  TallyItem getLocalItem(String name, CollectionStatus collectionStatus) {
+    return _topLevelList.firstWhere((item) =>
+        item.name == name &&
+        item.isCollection ==
+            (collectionStatus == CollectionStatus.isCollection));
   }
 
   void createParentItemList([NotifyFlag shouldNotify = NotifyFlag.doNotify]) {
@@ -114,35 +83,6 @@ class TaskManager with ChangeNotifier {
     }
   }
 
-  // ? maybe this would get expensive with many collections or tasks
-  // ? instead of updating many collections maybe I could update a single map
-  // ? that holds info with task names as keys and positions as values.
-  // ? that way there may be less writes to db or whatever
-  void updateItemPositions(
-      int oldPositionInList, int newPositionInList, ParentStatus parentStatus) {
-    final operableList = parentStatus == ParentStatus.inParentList
-        ? _parentItemList
-        : _childItemList;
-    final item = operableList.removeAt(oldPositionInList);
-
-    if (newPositionInList < oldPositionInList) {
-      item.positionInList = newPositionInList;
-      operableList.insert(newPositionInList, item);
-
-      for (var i = newPositionInList + 1; i <= oldPositionInList; i++) {
-        operableList[i].positionInList += 1;
-      }
-    } else if (newPositionInList > oldPositionInList) {
-      item.positionInList = newPositionInList - 1;
-      operableList.insert(newPositionInList - 1, item);
-
-      for (var i = oldPositionInList; i < newPositionInList - 1; i++) {
-        operableList[i].positionInList -= 1;
-      }
-    }
-    notifyListeners();
-  }
-
   void createChildItemList([NotifyFlag shouldNotify = NotifyFlag.doNotify]) {
     _childItemList = [];
     for (int i = 0; i < _topLevelList.length; i++) {
@@ -165,46 +105,8 @@ class TaskManager with ChangeNotifier {
     }
   }
 
-  List<String> get collectionNames {
-    List<String> collectionNames = [];
-    _topLevelList.forEach((element) {
-      if (element.isCollection) {
-        collectionNames.add(element.name);
-      }
-    });
-    return collectionNames;
-  }
-
-  List<String> get CollectionNames {
-    List<String> collectionNames = [];
-    _topLevelList.forEach((element) {
-      if (element.isCollection) {
-        collectionNames.add(
-          element.name,
-        );
-      }
-    });
-    return collectionNames;
-  }
-
-  TallyItem getParentItemByIndex(int itemIndex) {
-    return _parentItemList[itemIndex];
-  }
-
-  void updateTopLevelList(
-      String name, CollectionStatus collectionStatus, TallyItem item,
-      [NotifyFlag shouldNotify = NotifyFlag.doNotNotify]) {
-    var replacementIndex = _topLevelList.indexWhere(
-        (item) => item.name == name && item.isCollection == collectionStatus);
-
-    _topLevelList.replaceRange(replacementIndex, replacementIndex + 1, [item]);
-    if (shouldNotify == NotifyFlag.doNotify) {
-      notifyListeners();
-    }
-  }
-
-  void addTask(TallyTask task) {
-    Hive.box('tally_tasks').add(task);
+  void createTask(TallyTask task) {
+    hiveManager.createTask(task);
     _topLevelList.add(task);
     if (task.inCollection) {
       _childItemList.add(task);
@@ -240,7 +142,7 @@ class TaskManager with ChangeNotifier {
         );
 
         newTallyCollection.addTallyTaskName(task.name);
-        addCollection(newTallyCollection);
+        createCollection(newTallyCollection);
       }
     } else {
       _parentItemList.add(task);
@@ -249,7 +151,7 @@ class TaskManager with ChangeNotifier {
     }
   }
 
-  void addCollection(TallyCollection collection) {
+  void createCollection(TallyCollection collection) {
     Hive.box('tally_collections').add(collection);
     _topLevelList.add(collection);
     // add to parent since can't be child by design.
@@ -257,9 +159,118 @@ class TaskManager with ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> readTallyTasks() async {
+    List<TallyTask> tallyTasks = await hiveManager.readTallyTasks();
+    _topLevelList.addAll(tallyTasks);
+  }
+
+  Future<void> readTallyCollections() async {
+    List<TallyCollection> tallyCollections =
+        await hiveManager.readTallyCollections();
+    _topLevelList.addAll(tallyCollections);
+  }
+
+  Future<void> readHiveData() async {
+    readTallyTasks();
+    readTallyCollections();
+  }
+
+  Future<void> getInitialData() async {
+    await readHiveData();
+    createParentItemList();
+    createChildItemList();
+  }
+
+  void hiveItemUpdate(TallyItem item, CollectionStatus collectionStatus) {
+    if (collectionStatus == CollectionStatus.isNotCollection) {
+      hiveManager.updateTask(item as TallyTask);
+    } else if (collectionStatus == CollectionStatus.isCollection) {
+      hiveManager.updateCollection(item as TallyCollection);
+    }
+  }
+
+  void updateExpansion(String name, CollectionStatus collectionStatus) {
+    var tallyItem = getLocalItem(name, collectionStatus);
+    print('expanding');
+    tallyItem.isExpanded = !tallyItem.isExpanded;
+    hiveItemUpdate(tallyItem, collectionStatus);
+    notifyListeners();
+  }
+
+  void updateTaskCount(TallyTask task, int intToAdd) {
+    task.count += intToAdd;
+    hiveManager.updateTask(task);
+  }
+
+  void updateCollectionCount(String collectionName, int intToAdd) {
+    var collectionToUpdate =
+        getLocalItem(collectionName, CollectionStatus.isCollection);
+    collectionToUpdate.count += intToAdd;
+    hiveManager.updateCollection(collectionToUpdate as TallyCollection);
+  }
+
+  // updating counts must happen at the task level. collections can't increase
+  // by themselves
+  void updateCounts(String name, int intToAdd) {
+    var tallyTask =
+        getLocalItem(name, CollectionStatus.isNotCollection) as TallyTask;
+    updateTaskCount(tallyTask, intToAdd);
+
+    var collections = tallyTask.collectionMemberships;
+    if (collections.length > 0) {
+      collections.forEach((collectionName) {
+        updateCollectionCount(collectionName, intToAdd);
+      });
+    }
+    notifyListeners();
+  }
+
+  // ? maybe this would get expensive with many collections or tasks
+  // ? instead of updating many collections maybe I could update a single map
+  // ? that holds info with task names as keys and positions as values.
+  // ? that way there may be less writes to db or whatever
+  void updateItemPositions(
+      int oldPositionInList, int newPositionInList, ParentStatus parentStatus) {
+    final operableList = parentStatus == ParentStatus.inParentList
+        ? _parentItemList
+        : _childItemList;
+    final item = operableList.removeAt(oldPositionInList);
+
+    if (newPositionInList < oldPositionInList) {
+      item.positionInList = newPositionInList;
+      operableList.insert(newPositionInList, item);
+
+      for (var i = newPositionInList + 1; i <= oldPositionInList; i++) {
+        operableList[i].positionInList += 1;
+      }
+    } else if (newPositionInList > oldPositionInList) {
+      item.positionInList = newPositionInList - 1;
+      operableList.insert(newPositionInList - 1, item);
+
+      for (var i = oldPositionInList; i < newPositionInList - 1; i++) {
+        operableList[i].positionInList -= 1;
+      }
+    }
+    notifyListeners();
+  }
+
+  void updateTopLevelList(
+      String name, CollectionStatus collectionStatus, TallyItem item,
+      [NotifyFlag shouldNotify = NotifyFlag.doNotNotify]) {
+    var replacementIndex = _topLevelList.indexWhere((item) =>
+        item.name == name &&
+        item.isCollection ==
+            (collectionStatus == CollectionStatus.isCollection));
+
+    _topLevelList.replaceRange(replacementIndex, replacementIndex + 1, [item]);
+    if (shouldNotify == NotifyFlag.doNotify) {
+      notifyListeners();
+    }
+  }
+
   void updateColletionMembers(String taskName, String parentCollection) {
     var collectionToUpdate =
-        getItemToUpdate(parentCollection, CollectionStatus.isCollection);
+        getLocalItem(parentCollection, CollectionStatus.isCollection);
     // var collectionToUpdate = _topLevelList
     //     .firstWhere((item) => item.name == collectionName && item.isCollection);
     (collectionToUpdate as TallyCollection).addTallyTaskName(taskName);
