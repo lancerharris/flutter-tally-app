@@ -1,0 +1,1 @@
+enum CollectionStatus { isNotCollection, isCollection }
