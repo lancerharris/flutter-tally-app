@@ -111,7 +111,7 @@ class _ScratchBoxState extends State<ScratchBox> with TickerProviderStateMixin {
 
     // scratchCount++;
     Provider.of<TaskManager>(context, listen: false)
-        .updateCount(widget.itemName, 1, CollectionStatus.isNotCollection);
+        .updateCounts(widget.itemName, 1);
   }
 
   void onPanUpdate(PointerMoveEvent details) {
@@ -177,7 +177,7 @@ class _ScratchBoxState extends State<ScratchBox> with TickerProviderStateMixin {
     }
     // scratchCount++;
     Provider.of<TaskManager>(context, listen: false)
-        .updateCount(widget.itemName, 1, CollectionStatus.isNotCollection);
+        .updateCounts(widget.itemName, 1);
   }
 
   void onMinusPress() async {
@@ -196,7 +196,7 @@ class _ScratchBoxState extends State<ScratchBox> with TickerProviderStateMixin {
     }
 
     Provider.of<TaskManager>(context, listen: false)
-        .updateCount(widget.itemName, -1, CollectionStatus.isNotCollection);
+        .updateCounts(widget.itemName, -1);
   }
 
   Future<void> clearScratchBox() async {
