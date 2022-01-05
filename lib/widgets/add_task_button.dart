@@ -32,7 +32,8 @@ class AddTaskButton extends StatelessWidget {
                   collections: collectionNames, taskNames: taskNames));
 
           if (newTask != null) {
-            Provider.of<TaskManager>(context, listen: false).addTask(newTask);
+            Provider.of<TaskManager>(context, listen: false)
+                .createTask(newTask);
           }
         },
         icon: Icon(Icons.add),
