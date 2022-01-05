@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:tally_app/models/enum_collection_status.dart';
 
 import '../../models/tally_item.dart';
 import '../../models/tally_task.dart';
