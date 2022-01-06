@@ -19,42 +19,45 @@ class TallyTaskAdapter extends TypeAdapter<TallyTask> {
     return TallyTask(
       name: fields[0] as String,
       dateCreated: fields[1] as DateTime,
-      streak: fields[2] as int,
-      count: fields[3] as int,
-      isExpanded: fields[4] as bool,
-      isFrozen: fields[5] as bool,
-      goalCount: fields[7] as int?,
-      goalIncrement: fields[8] as String?,
+      positionInList: fields[2] as int,
+      streak: fields[3] as int,
+      count: fields[4] as int,
+      isExpanded: fields[5] as bool,
+      isFrozen: fields[6] as bool,
+      goalCount: fields[8] as int?,
+      goalIncrement: fields[9] as String?,
     )
-      ..collectionMemberships = (fields[9] as List).cast<String>()
-      ..inCollection = fields[10] as bool;
+      ..collectionMemberships = (fields[10] as List).cast<String>()
+      ..inCollection = fields[11] as bool;
   }
 
   @override
   void write(BinaryWriter writer, TallyTask obj) {
     writer
-      ..writeByte(11)
+      ..writeByte(12)
       ..writeByte(0)
       ..write(obj.name)
       ..writeByte(1)
       ..write(obj.dateCreated)
       ..writeByte(2)
-      ..write(obj.streak)
+      ..write(obj.positionInList)
       ..writeByte(3)
-      ..write(obj.count)
+      ..write(obj.streak)
       ..writeByte(4)
-      ..write(obj.isExpanded)
+      ..write(obj.count)
       ..writeByte(5)
-      ..write(obj.isFrozen)
+      ..write(obj.isExpanded)
       ..writeByte(6)
-      ..write(obj.isCollection)
+      ..write(obj.isFrozen)
       ..writeByte(7)
-      ..write(obj.goalCount)
+      ..write(obj.isCollection)
       ..writeByte(8)
-      ..write(obj.goalIncrement)
+      ..write(obj.goalCount)
       ..writeByte(9)
-      ..write(obj.collectionMemberships)
+      ..write(obj.goalIncrement)
       ..writeByte(10)
+      ..write(obj.collectionMemberships)
+      ..writeByte(11)
       ..write(obj.inCollection);
   }
 

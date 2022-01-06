@@ -19,32 +19,35 @@ class TallyCollectionAdapter extends TypeAdapter<TallyCollection> {
     return TallyCollection(
       name: fields[0] as String,
       dateCreated: fields[1] as DateTime,
-      streak: fields[2] as int,
-      count: fields[3] as int,
-      isExpanded: fields[4] as bool,
-      isFrozen: fields[5] as bool,
-    )..tallyTaskNames = (fields[6] as List).cast<String>();
+      positionInList: fields[2] as int,
+      streak: fields[3] as int,
+      count: fields[4] as int,
+      isExpanded: fields[5] as bool,
+      isFrozen: fields[6] as bool,
+    )..tallyTaskNames = (fields[7] as List).cast<String>();
   }
 
   @override
   void write(BinaryWriter writer, TallyCollection obj) {
     writer
-      ..writeByte(8)
+      ..writeByte(9)
       ..writeByte(0)
       ..write(obj.name)
       ..writeByte(1)
       ..write(obj.dateCreated)
       ..writeByte(2)
-      ..write(obj.streak)
+      ..write(obj.positionInList)
       ..writeByte(3)
-      ..write(obj.count)
+      ..write(obj.streak)
       ..writeByte(4)
-      ..write(obj.isExpanded)
+      ..write(obj.count)
       ..writeByte(5)
-      ..write(obj.isFrozen)
+      ..write(obj.isExpanded)
       ..writeByte(6)
-      ..write(obj.tallyTaskNames)
+      ..write(obj.isFrozen)
       ..writeByte(7)
+      ..write(obj.tallyTaskNames)
+      ..writeByte(8)
       ..write(obj.isCollection);
   }
 

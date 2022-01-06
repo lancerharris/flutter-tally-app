@@ -83,6 +83,7 @@ class _NewTaskModalState extends State<NewTaskModal> {
         dateCreated: DateTime.now(),
         goalCount: _goalCount,
         goalIncrement: _goalIncrement,
+        positionInList: -1,
       );
       if (_collectionMemberships.isNotEmpty) {
         newTallyTask.addAllToCollectionMemberships(_collectionMemberships);

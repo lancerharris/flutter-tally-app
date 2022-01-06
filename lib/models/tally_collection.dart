@@ -11,21 +11,24 @@ class TallyCollection extends TallyItem {
   @HiveField(1)
   final DateTime dateCreated;
   @HiveField(2)
-  int streak;
+  int positionInList;
   @HiveField(3)
-  int count;
+  int streak;
   @HiveField(4)
-  bool isExpanded;
+  int count;
   @HiveField(5)
-  bool isFrozen;
+  bool isExpanded;
   @HiveField(6)
-  List<String> tallyTaskNames = [];
+  bool isFrozen;
   @HiveField(7)
+  List<String> tallyTaskNames = [];
+  @HiveField(8)
   final bool isCollection = true;
 
   TallyCollection({
     required this.name,
     required this.dateCreated,
+    required this.positionInList,
     this.streak = 0,
     this.count = 0,
     this.isExpanded = false,
@@ -33,6 +36,7 @@ class TallyCollection extends TallyItem {
   }) : super(
           name: name,
           dateCreated: dateCreated,
+          positionInList: positionInList,
           streak: streak,
           count: count,
           isExpanded: isExpanded,

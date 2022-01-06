@@ -13,10 +13,10 @@ class TallyItem extends HiveObject {
   TallyItem({
     required this.name,
     required this.dateCreated,
+    required this.positionInList,
     this.streak = 0,
     this.count = 0,
     this.isExpanded = false,
     this.isFrozen = false,
-    this.positionInList = 0,
   }) {}
 }

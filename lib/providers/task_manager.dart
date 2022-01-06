@@ -1,5 +1,4 @@
 import 'package:flutter/foundation.dart';
-import 'package:hive/hive.dart';
 import '../models/tally_item.dart';
 import '../models/tally_collection.dart';
 import '../models/tally_task.dart';
@@ -106,11 +105,10 @@ class TaskManager with ChangeNotifier {
   }
 
   void createTask(TallyTask task) {
-    hiveManager.createTask(task);
     _topLevelList.add(task);
     if (task.inCollection) {
+      task.positionInList = _childItemList.length;
       _childItemList.add(task);
-
       // add the new collection
       // I think that I may be already performing this check in the selection of
       // the collection in the new task creation
@@ -139,6 +137,7 @@ class TaskManager with ChangeNotifier {
         final newTallyCollection = TallyCollection(
           name: newCollectionName,
           dateCreated: task.dateCreated,
+          positionInList: _parentItemList.length,
         );
 
         newTallyCollection.addTallyTaskName(task.name);
@@ -149,10 +148,11 @@ class TaskManager with ChangeNotifier {
       // only notify if not in collection. otherwise wait for collection add.
       notifyListeners();
     }
+    hiveManager.createTask(task);
   }
 
   void createCollection(TallyCollection collection) {
-    Hive.box('tally_collections').add(collection);
+    hiveManager.createCollection(collection);
     _topLevelList.add(collection);
     // add to parent since can't be child by design.
     _parentItemList.add(collection);
