@@ -8,7 +8,7 @@ import '../models/enum_collection_status.dart';
 class HiveManager {
   void createTask(TallyTask task) => Hive.box('tally_tasks').add(task);
   void createCollection(TallyCollection collection) =>
-      Hive.box('tally_collection').add(collection);
+      Hive.box('tally_collections').add(collection);
 
   Future<List<TallyTask>> readTallyTasks() async {
     List<TallyTask> taskList = [];
