@@ -9,9 +9,12 @@ import '../theme/app_theme.dart';
 import '../models/tally_task.dart';
 
 class NewTaskModal extends StatefulWidget {
-  const NewTaskModal({Key? key, this.collections, this.taskNames})
-      : super(key: key);
-  final List<String>? collections;
+  const NewTaskModal({
+    Key? key,
+    required this.collections,
+    this.taskNames,
+  }) : super(key: key);
+  final List<String> collections;
   final List<String>? taskNames;
 
   @override
@@ -48,10 +51,9 @@ class _NewTaskModalState extends State<NewTaskModal> {
       _collectionMemberships.add(parentCollection);
     } else {
       // if the user removes their text, remove from _collectionMemberships
-      if (widget.collections != null) {
-        _collectionMemberships.removeWhere((parentCollection) =>
-            !widget.collections!.contains(parentCollection));
-      }
+
+      _collectionMemberships.removeWhere(
+          (parentCollection) => !widget.collections.contains(parentCollection));
     }
   }
 

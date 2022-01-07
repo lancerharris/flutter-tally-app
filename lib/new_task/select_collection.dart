@@ -5,13 +5,13 @@ import 'package:tally_app/theme/app_theme.dart';
 class SelectCollection extends StatefulWidget {
   const SelectCollection({
     Key? key,
-    this.collections,
+    required this.collections,
     required this.addToCollectionMemberships,
     required this.setInputError,
     required this.removeFromCollectionMemberships,
     required this.collectionMemberships,
   }) : super(key: key);
-  final List<String>? collections;
+  final List<String> collections;
   final List<String> collectionMemberships;
   final Function(String) addToCollectionMemberships;
   final Function(String, String) setInputError;
@@ -56,13 +56,12 @@ class _SelectCollectionState extends State<SelectCollection> {
   }
 
   bool checkCollectionExistence(String possibleName) {
-    if (widget.collections != null) {
-      for (var i = 0; i < widget.collections!.length; i++) {
-        if (widget.collections![i] == possibleName) {
-          return true;
-        }
+    for (var i = 0; i < widget.collections.length; i++) {
+      if (widget.collections[i] == possibleName) {
+        return true;
       }
     }
+
     return false;
   }
 
@@ -143,7 +142,7 @@ class _SelectCollectionState extends State<SelectCollection> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SizedBox(height: 20),
-              if (widget.collections != null)
+              if (widget.collections.length > 0)
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   // a bit hacky with the spacer in the list below
@@ -170,6 +169,23 @@ class _SelectCollectionState extends State<SelectCollection> {
                       onTap: () {
                         setState(() {
                           _collectionOption = collectionOption;
+                          if (_selectedCollectionName != null &&
+                              _collectionOption == _collectionOption2) {
+                            widget.removeFromCollectionMemberships(
+                                _selectedCollectionName!);
+                            if (_newCollectionName != null) {
+                              widget.addToCollectionMemberships(
+                                  _newCollectionName!);
+                            }
+                          } else if (_selectedCollectionName != null &&
+                              _collectionOption == _collectionOption1) {
+                            if (_newCollectionName != null) {
+                              widget.removeFromCollectionMemberships(
+                                  _newCollectionName!);
+                            }
+                            widget.addToCollectionMemberships(
+                                _selectedCollectionName!);
+                          }
                         });
                       },
                     );
@@ -187,7 +203,7 @@ class _SelectCollectionState extends State<SelectCollection> {
                   child: Wrap(
                     spacing: 5,
                     runSpacing: 5,
-                    children: widget.collections!
+                    children: widget.collections
                         .map((collectionName) {
                           return GestureDetector(
                             child: ClipRRect(
@@ -249,14 +265,14 @@ class _SelectCollectionState extends State<SelectCollection> {
                   ),
                 ),
               if (_collectionOption == _collectionOption2 ||
-                  widget.collections == null)
+                  widget.collections.length == 0)
                 Padding(
                   padding: const EdgeInsets.only(top: 20, left: 30),
                   child: Text('Create something new:',
                       style: Theme.of(context).textTheme.headline3),
                 ),
               if (_collectionOption == _collectionOption2 ||
-                  widget.collections == null)
+                  widget.collections.length == 0)
                 Padding(
                   padding: const EdgeInsets.only(left: 30),
                   child: TextField(
@@ -290,8 +306,8 @@ class _SelectCollectionState extends State<SelectCollection> {
                       // remove the previous value sent to collectionMemberships
                       if (_newCollectionName != null &&
                           _newCollectionName != inputString) {
-                        widget.collectionMemberships.removeWhere(
-                            (collectionName) => collectionName == inputString);
+                        widget.removeFromCollectionMemberships(
+                            _newCollectionName!);
                       }
                       var isAlreadyMember =
                           checkCollectionMembershipExistence(inputString);
@@ -299,8 +315,9 @@ class _SelectCollectionState extends State<SelectCollection> {
                           checkCollectionExistence(inputString);
                       if (!isAlreadyMember && !isAlreadyCollection ||
                           widget.collections == null) {
-                        widget.addToCollectionMemberships(inputString);
                         _newCollectionName = inputString;
+                        widget.addToCollectionMemberships(
+                            _newCollectionName ?? '');
                       }
                     },
                   ),
