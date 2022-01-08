@@ -134,7 +134,7 @@ class _AddGoalState extends State<AddGoal> {
                                       .cast<Widget>()),
                             ),
                             SizedBox(
-                              width: 60,
+                              width: 75,
                               child: Text(
                                 '${NumberFormat("##,###", "en_US").format(_goalCount)}',
                                 style: Theme.of(context).textTheme.headline2,
@@ -169,8 +169,11 @@ class _AddGoalState extends State<AddGoal> {
                       ),
                     ),
                     SizedBox(width: 10),
-                    Text(_goalCount == 1 ? 'Tally' : 'Tallies',
-                        style: Theme.of(context).textTheme.headline3),
+                    SizedBox(
+                      width: 45,
+                      child: Text(_goalCount == 1 ? 'Tally  ' : 'Tallies',
+                          style: Theme.of(context).textTheme.headline3),
+                    ),
                   ],
                 ),
                 SizedBox(height: 20),
