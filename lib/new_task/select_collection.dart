@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tally_app/data/motivations.dart';
 
 import 'package:tally_app/theme/app_theme.dart';
 
@@ -289,7 +290,7 @@ class _SelectCollectionState extends State<SelectCollection> {
                             color: Color.lerp(AppTheme.mainColor,
                                 AppTheme.secondaryColor, 0.05)!),
                       ),
-                      labelText: 'i.e. Workouts',
+                      labelText: 'i.e. ${getRandomCollectionMotivation()}',
                       labelStyle: TextStyle(
                         color: _focusNode2.hasFocus
                             ? Color.lerp(AppTheme.mainColor,
