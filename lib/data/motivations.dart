@@ -7,7 +7,9 @@ List<String> taskMotivations = [
   'Eat Vegetables!',
   'Draw Something',
   'Write a Journal Entry',
-  'Smell a flower'
+  'Smell a flower',
+  'Smile 😊',
+  'Help Someone Else'
 ];
 List<String> collectionMotivations = [
   'Workouts',
@@ -16,7 +18,9 @@ List<String> collectionMotivations = [
   'Weight Loss',
   'Hard Stuff',
   'Daily Tasks',
-  'Gardening'
+  'Gardening',
+  'Practice Gratitude',
+  'Become my Best Self',
 ];
 
 var random = Random();
