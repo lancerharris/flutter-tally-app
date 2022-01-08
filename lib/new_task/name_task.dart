@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:tally_app/theme/app_theme.dart';
 
+import '../data/motivations.dart';
+
 class NameTask extends StatefulWidget {
   const NameTask({
     Key? key,
@@ -69,7 +71,7 @@ class _NameTaskState extends State<NameTask> {
                     color: Color.lerp(
                         AppTheme.mainColor, AppTheme.secondaryColor, 0.05)!),
               ),
-              labelText: 'i.e. Do something exciting',
+              labelText: 'i.e. ${getRandomTaskMotivation()}',
               labelStyle: TextStyle(
                 color: _focusNode1.hasFocus
                     ? Color.lerp(
