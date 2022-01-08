@@ -54,8 +54,9 @@ class HomeScreen extends StatelessWidget {
             onReorder: (oldPositionInList, newPositionInList) {
               updateParentItemPositions(oldPositionInList, newPositionInList);
             })
-        : const Center(
-            child: Text('Start adding tally tasks!'),
+        : Center(
+            child: Text('Start Adding Tasks!',
+                style: Theme.of(context).textTheme.headline2),
           );
   }
 }
